@@ -1,6 +1,6 @@
 package models.business;
 
-import models.business.enums.Status;
+import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
 import java.util.Objects;
@@ -9,12 +9,10 @@ public class Task {
     protected int id;
     protected TaskType taskType;
     protected String taskName;
-    protected Status taskStatus;
+    protected TaskStatus taskStatus;
     protected String taskDescription;
 
-
-
-    public Task(String taskName, String taskDescription, Status taskStatus) {
+    public Task(String taskName, String taskDescription, TaskStatus taskStatus) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
@@ -24,22 +22,13 @@ public class Task {
         this.taskDescription = taskDescription;
     }
 
-    public Task (int id, TaskType taskType, String taskName, String taskDescription, Status taskStatus) {
+    public Task (int id, TaskType taskType, String taskName, String taskDescription,
+        TaskStatus taskStatus) {
         this.id = id;
         this.taskType = taskType;
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
-    }
-
-    public Task fromString(String value) {
-        String[] taskInfo = value.split(",");
-        int taskId = Integer.parseInt(taskInfo[0]);
-        TaskType taskType = TaskType.valueOf(taskInfo[1]);
-        String taskName = taskInfo[2];
-        Status taskStatus = Status.valueOf(taskInfo[3]);
-        String taskDescription = taskInfo[4];
-        return new Task(taskId, taskType, taskName, taskDescription, taskStatus);
     }
 
     public TaskType getTaskType(){
@@ -62,11 +51,11 @@ public class Task {
         this.taskDescription = taskDescription;
     }
 
-    public Status getTaskStatus() {
+    public TaskStatus getTaskStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(Status taskStatus) {
+    public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
 

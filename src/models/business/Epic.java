@@ -1,6 +1,6 @@
 package models.business;
 
-import models.business.enums.Status;
+import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
 import java.util.ArrayList;
@@ -14,7 +14,8 @@ public class Epic extends Task {
         subTasksId = new ArrayList<>();
     }
 
-    public Epic(int taskId, TaskType taskType, String taskName, String taskDescription, Status taskStatus) {
+    public Epic(int taskId, TaskType taskType, String taskName, String taskDescription,
+        TaskStatus taskStatus) {
         super(taskId, taskType, taskName, taskDescription, taskStatus);
     }
 
@@ -30,8 +31,11 @@ public class Epic extends Task {
         return subTasksId.size();
     }
 
-    public void deleteSubTask(int subTaskId) {
+    public void deleteSubTaskInEpic(int subTaskId) {
         subTasksId.remove((Integer) subTaskId);
+    }
+    public void deleteAllSubTasksInEpic() {
+        subTasksId.clear();
     }
 
     @Override
@@ -53,4 +57,5 @@ public class Epic extends Task {
     public int hashCode() {
         return Objects.hash(id, taskName, taskStatus, taskDescription);
     }
+
 }

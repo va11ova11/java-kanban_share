@@ -2,7 +2,7 @@ import exception.ManagerSaveException;
 import models.business.Epic;
 import models.business.SubTask;
 import models.business.Util.Managers;
-import models.business.enums.Status;
+import models.business.enums.TaskStatus;
 import services.manager.TasksManager;
 
 public class Main {
@@ -14,9 +14,9 @@ public class Main {
         int epicId1 = manager.createEpic(epic1);
         int epicId2 = manager.createEpic(epic2);
 
-        SubTask subTask1 = new SubTask("Subtask in Epic 1", "Subtask1 description", Status.NEW, epicId1);
-        SubTask subtask2 = new SubTask("Subtask in Epic 1", "Subtask2 description", Status.IN_PROGRESS, epicId1);
-        SubTask subtask3 = new SubTask("Subtask in Epic 2", "Subtask3 description", Status.DONE, epicId2);
+        SubTask subTask1 = new SubTask("Subtask in Epic 1", "Subtask1 description", TaskStatus.NEW, epicId1);
+        SubTask subtask2 = new SubTask("Subtask in Epic 1", "Subtask2 description", TaskStatus.IN_PROGRESS, epicId1);
+        SubTask subtask3 = new SubTask("Subtask in Epic 2", "Subtask3 description", TaskStatus.DONE, epicId2);
         int subtaskId1 = manager.createSubTask(subTask1);
         int subtaskId2 = manager.createSubTask(subtask2);
         int subtaskId3 = manager.createSubTask(subtask3);

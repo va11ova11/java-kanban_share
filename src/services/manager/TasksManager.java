@@ -6,12 +6,13 @@ import models.business.Task;
 
 import java.util.HashMap;
 import java.util.List;
+import models.business.enums.TaskStatus;
 
 public interface TasksManager {
-    int createTask(Task task) throws ManagerSaveException;
-    int createEpic(Epic epic) throws ManagerSaveException;
-    int createSubTask(SubTask subTask) throws ManagerSaveException;
-    Task getTaskById(int taskId) throws ManagerSaveException;
+    int createTask(Task task);
+    int createEpic(Epic epic);
+    int createSubTask(SubTask subTask);
+    Task getTaskById(int taskId);
     HashMap<Integer, Task> getTasks();
     HashMap<Integer, Epic> getEpics();
     HashMap<Integer, SubTask> getSubTasks();
@@ -19,7 +20,7 @@ public interface TasksManager {
     void updateTask(Task task);
     void deleteAllTask();
     void deleteAllEpic();
-    void deleteAllSubTask();
+    void deleteAllSubTasksInEpic(Epic epic);
     void printAllTask();
     Epic getEpicById(int epicId) throws ManagerSaveException;
     SubTask getSubTaskById(int subTaskId) throws ManagerSaveException;
@@ -28,4 +29,5 @@ public interface TasksManager {
     void updateSubTask(SubTask subTask);
     void checkEpicStatus(SubTask subTask);
     void updateEpicStatus(int newCount, int doneCount, Epic epic);
+    void setSubtaskStatus(SubTask subTask, TaskStatus taskStatus);
 }

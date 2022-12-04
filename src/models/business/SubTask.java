@@ -1,6 +1,6 @@
 package models.business;
 
-import models.business.enums.Status;
+import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
 import java.util.Objects;
@@ -8,19 +8,23 @@ import java.util.Objects;
 public class SubTask extends Task {
     private int epicId;
 
-    public SubTask(String subName, String subTaskDescription, Status subTaskStatus, int epicId) {
-        super(subName, subTaskDescription, subTaskStatus);
+    public SubTask(String subName, String subTaskDescription, TaskStatus subTaskTaskStatus,
+        int epicId) {
+        super(subName, subTaskDescription, subTaskTaskStatus);
         this.epicId = epicId;
     }
 
-    public SubTask(int taskId, TaskType taskType, String taskName, String taskDescription, Status taskStatus, int epicId) {
+    public SubTask(int taskId, TaskType taskType, String taskName, String taskDescription,
+        TaskStatus taskStatus, int epicId) {
         super(taskId, taskType, taskName, taskDescription, taskStatus);
         this.epicId = epicId;
     }
 
-//  public SubTask(int taskId, TaskType taskType, String taskName, Status taskStatus, String taskDescription, int epicId) {
-//    super(taskId, taskType, taskName, taskStatus, taskDescription, epicId);
-//  }
+    public SubTask(String taskName, String taskDescription, int epicId) {
+      super(taskName, taskDescription);
+      this.epicId = epicId;
+    }
+
 
   public TaskType getTaskType() {
         return taskType;
@@ -36,7 +40,8 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return id + "," + TaskType.SUBTASK + "," + taskName + "," + taskStatus + "," + taskDescription + "," + epicId;
+        return id + "," + TaskType.SUBTASK + "," + taskName + "," + taskStatus + "," +
+            taskDescription + "," + epicId;
     }
 
     @Override

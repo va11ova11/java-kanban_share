@@ -4,7 +4,7 @@ import models.business.Epic;
 import models.business.SubTask;
 import models.business.Task;
 import models.business.Util.Managers;
-import models.business.enums.Status;
+import models.business.enums.TaskStatus;
 import services.manager.history.HistoryManager;
 
 import java.util.HashMap;
@@ -42,7 +42,7 @@ public class InMemoryTasksManager implements TasksManager {
     public int createEpic(Epic epic) {
         final int epicId = ++id;
         epic.setId(epicId);
-        epic.setTaskStatus(Status.NEW);
+        epic.setTaskStatus(TaskStatus.NEW);
         epics.put(epicId, epic);
         return epicId;
     }
@@ -119,7 +119,7 @@ public class InMemoryTasksManager implements TasksManager {
         } else if (subtasks.containsKey(id)) {
             SubTask subTask = subtasks.get(id);
             subtasks.remove(id);
-            epics.get(subTask.getEpicId()).deleteSubTask(id);
+            epics.get(subTask.getEpicId()).deleteSubTaskInEpic(id);
             checkEpicStatus(subTask);
         } else if (epics.containsKey(id)) {
             for (Integer subTasksId : epics.get(id).getSubTasksId()) {
@@ -151,9 +151,9 @@ public class InMemoryTasksManager implements TasksManager {
         int doneCount = 0;
         Epic epic = epics.get(subTask.getEpicId());
         for (Integer subTaskIdInEpic : epic.getSubTasksId()) {
-            if (subtasks.get(subTaskIdInEpic).getTaskStatus() == Status.NEW) {
+            if (subtasks.get(subTaskIdInEpic).getTaskStatus() == TaskStatus.NEW) {
                 newCount++;
-            } else if (subtasks.get(subTaskIdInEpic).getTaskStatus() == Status.DONE) {
+            } else if (subtasks.get(subTaskIdInEpic).getTaskStatus() == TaskStatus.DONE) {
                 doneCount++;
             }
         }
@@ -163,13 +163,13 @@ public class InMemoryTasksManager implements TasksManager {
     @Override
     public void updateEpicStatus(int newCount, int doneCount, Epic epic) {
         if (epic.getSubTasksId().isEmpty() || epic.getSubTasksSize() == newCount) {
-            epic.setTaskStatus(Status.NEW);
+            epic.setTaskStatus(TaskStatus.NEW);
             epics.put(epic.getId(), epic);
         } else if (epic.getSubTasksSize() == doneCount) {
-            epic.setTaskStatus(Status.DONE);
+            epic.setTaskStatus(TaskStatus.DONE);
             epics.put(epic.getId(), epic);
         } else {
-            epic.setTaskStatus(Status.IN_PROGRESS);
+            epic.setTaskStatus(TaskStatus.IN_PROGRESS);
             epics.put(epic.getId(), epic);
         }
     }
@@ -246,7 +246,15 @@ public class InMemoryTasksManager implements TasksManager {
     }
 
     @Override
-    public void deleteAllSubTask() {
+    public void deleteAllSubTasksInEpic(Epic epic) {
+        epic.deleteAllSubTasksInEpic();
+        epic.setTaskStatus(TaskStatus.NEW);
         subtasks.clear();
+    }
+
+    public void setSubtaskStatus(SubTask subTask, TaskStatus taskStatus) {
+        subTask.setTaskStatus(taskStatus);
+        subtasks.put(subTask.getId(), subTask);
+        checkEpicStatus(subTask);
     }
 }

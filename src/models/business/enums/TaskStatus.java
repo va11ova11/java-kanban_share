@@ -1,6 +1,6 @@
 package models.business.enums;
 
-public enum Status {
+public enum TaskStatus {
     NEW,
     DONE,
     IN_PROGRESS,

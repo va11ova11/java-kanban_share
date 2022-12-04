@@ -2,9 +2,8 @@ package services.manager.history;
 
 import models.business.Epic;
 import models.business.Task;
-
-
 import java.util.*;
+import models.business.enums.TaskType;
 
 public class InMemoryHistoryManager implements HistoryManager {
 
@@ -20,6 +19,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     private Node<T> head;
     private Node<T> tail;
     private int size = 0;
+
 
     private void removeNode(Node<T> node) {
       if (node == head) {
@@ -101,7 +101,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     if (!customLinkedList.historyMap.containsKey(id)) {
       return;
     }
-    if (customLinkedList.historyMap.get(id).data.getClass() == Epic.class) {
+    if (customLinkedList.historyMap.get(id).data.getTaskType() == TaskType.EPIC) {
       Epic epic = (Epic) customLinkedList.historyMap.get(id).data;
       for (Integer subTaskId : epic.getSubTasksId()) {
         if (customLinkedList.historyMap.containsKey(subTaskId)) {
