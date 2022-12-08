@@ -1,13 +1,17 @@
 package tests;
 
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.util.Map;
 import models.business.Epic;
-import models.business.SubTask;
+import models.business.Subtask;
 import models.business.Task;
 import models.business.enums.TaskStatus;
+import org.junit.jupiter.api.Test;
 import services.manager.TasksManager;
 
 
@@ -18,7 +22,11 @@ public abstract class TaskManagerTest<T extends TasksManager> {
   public TaskManagerTest(T tasksManager) {
     this.tasksManager = tasksManager;
   }
+  public T getTasksManager() {
+    return tasksManager;
+  }
 
+  @Test
   public void createTask() {
     Task task = new Task("TaskNew", "TaskNew_desc", TaskStatus.NEW);
     final int taskId = tasksManager.createTask(task);
@@ -35,6 +43,7 @@ public abstract class TaskManagerTest<T extends TasksManager> {
   }
 
 
+  @Test
   public void createEpic() {
     Epic epic = new Epic("NewEpic", "EpicNew_desc");
     final int epicId = tasksManager.createEpic(epic);
@@ -52,22 +61,39 @@ public abstract class TaskManagerTest<T extends TasksManager> {
     assertEquals(epic, epics.get(epic.getId()), "Эпики не совпадают");
   }
 
+  @Test
   public void createSubTask() {
     Epic epic = new Epic("NewEpic", "EpicNew_desc");
     final int epicId = tasksManager.createEpic(epic);
-    SubTask subTask = new SubTask("NewSubTask", "NewSub_desc",
+    Subtask subTask = new Subtask("NewSubTask", "NewSub_desc",
         TaskStatus.NEW, epicId);
     final int subTaskId = tasksManager.createSubTask(subTask);
-    SubTask savedSubTask = tasksManager.getSubTaskById(subTaskId);
+    Subtask savedSubtask = tasksManager.getSubTaskById(subTaskId);
 
     assertEquals(subTask.getEpicId(), epicId, "У Сабтаски нет эпика");
-    assertEquals(subTask, savedSubTask, "Сабтаски не равны");
+    assertEquals(subTask, savedSubtask, "Сабтаски не равны");
     assertNotNull(subTask, "Сабтаск не найден");
 
-    final Map<Integer, SubTask> subTasks = tasksManager.getSubTasks();
+    final Map<Integer, Subtask> subTasks = tasksManager.getSubTasks();
 
     assertEquals(1, subTasks.size(), "Неверное количество Сабтасков");
     assertNotNull(subTasks, "Сабтаски не возвращаются");
     assertEquals(subTask, subTasks.get(subTask.getId()), "Сабтаски не совпадают");
+  }
+
+  @Test
+  public void deleteTaskById() {
+    Task task1 = new Task("Task1", "Task1_disc", TaskStatus.NEW);
+    Task task2 = new Task("Task1", "Task1_disc", TaskStatus.NEW);
+    final int taskId1 = tasksManager.createTask(task1);
+    final int taskId2 = tasksManager.createTask(task2);
+
+    tasksManager.deleteTaskById(taskId1);
+    Task deleteTask = tasksManager.getTaskById(taskId1);
+    assertNull(deleteTask, "Таска не удалилась");
+
+    tasksManager.deleteTaskById(5);
+    Map<Integer, Task> tasks = tasksManager.getTasks();
+    assertEquals(1, tasks.size(), "Не верное удаление по Id");
   }
 }

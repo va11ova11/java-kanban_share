@@ -1,12 +1,10 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
 import models.business.Epic;
-import models.business.SubTask;
+import models.business.Subtask;
 import models.business.Util.Managers;
 import models.business.enums.TaskStatus;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,64 +12,102 @@ import services.manager.TasksManager;
 
 public class EpicTest {
 
-  private static TasksManager manager;
-  private static Epic epic;
-  private static int epicId;
-  private static SubTask subTask1;
-  private static SubTask subTask2;
+  private static TasksManager tasksManager;
 
   @BeforeAll
   public static void beforeAll() {
-    manager = Managers.getDefault();
-    epic = new Epic("Epic1", "Epic1_description");
-    epicId = manager.createEpic(epic);
-    subTask1 = new SubTask("Subtask1", "Subtask1_description", epicId);
-    subTask2 = new SubTask("Subtask2", "Subtask2_description", epicId);
+    tasksManager = Managers.getDefault();
   }
-
   @BeforeEach
-  public void beforeEach() {
-    manager.createSubTask(subTask1);
-    manager.createSubTask(subTask2);
+  public void deleteEpic(){
+    tasksManager.deleteAllEpic();
   }
-
 
   @Test
   public void shouldEpicStatusIsNewWhenSubtaskListIsEmpty() {
-    manager.deleteAllSubTasksInEpic(epic);
-    TaskStatus actual = manager.getEpicById(epicId).getTaskStatus();
-    assertEquals(TaskStatus.NEW, actual, "Неправильный статус Эпика");
+    Epic epic = new Epic("Epic1", "Epic1_description");
+    final int epicId = tasksManager.createEpic(epic);
+    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", epicId);
+    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", epicId);
+    tasksManager.createSubTask(subtask1);
+    tasksManager.createSubTask(subtask2);
+
+    tasksManager.deleteAllSubTasksInEpic(epic);
+    TaskStatus actual = tasksManager.getEpicById(epicId).getTaskStatus();
+
+    assertEquals(TaskStatus.NEW, actual, "При удалении всех сабтасок статус эпика не меняться на New");
   }
 
   @Test
   public void shouldEpicStatusIsNewWhenAllSubtasksStatusIsNew() {
-    manager.setSubtaskStatus(subTask1, TaskStatus.NEW);
-    manager.setSubtaskStatus(subTask2, TaskStatus.NEW);
-    TaskStatus actual = manager.getEpicById(epicId).getTaskStatus();
-    assertEquals(TaskStatus.NEW, actual, "Неправильный статус Эпика");
+    Epic epic = new Epic("Epic1", "Epic1_description");
+    final int epicId = tasksManager.createEpic(epic);
+    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", TaskStatus.DONE, epicId);
+    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", TaskStatus.DONE, epicId);
+    tasksManager.createSubTask(subtask1);
+    tasksManager.createSubTask(subtask2);
+
+    subtask1.setSubtaskStatus(TaskStatus.NEW);
+    subtask2.setSubtaskStatus(TaskStatus.NEW);
+    tasksManager.updateSubTask(subtask1);
+    tasksManager.updateSubTask(subtask2);
+    TaskStatus actual = tasksManager.getEpicById(epicId).getTaskStatus();
+
+    assertEquals(TaskStatus.NEW, actual, "Статус эпика не меняется на NEW");
   }
 
   @Test
   public void shouldEpicStatusIsDoneWhenAllSubtasksStatusIsDone() {
-    manager.setSubtaskStatus(subTask1, TaskStatus.DONE);
-    manager.setSubtaskStatus(subTask2, TaskStatus.DONE);
-    TaskStatus actual = manager.getEpicById(epicId).getTaskStatus();
-    assertEquals(TaskStatus.DONE, actual, "Неправильный статус Эпика");
+    Epic epic = new Epic("Epic1", "Epic1_description");
+    final int epicId = tasksManager.createEpic(epic);
+    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", TaskStatus.NEW, epicId);
+    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", TaskStatus.NEW, epicId);
+    tasksManager.createSubTask(subtask1);
+    tasksManager.createSubTask(subtask2);
+
+    subtask1.setSubtaskStatus(TaskStatus.DONE);
+    subtask2.setSubtaskStatus(TaskStatus.DONE);
+    tasksManager.updateSubTask(subtask1);
+    tasksManager.updateSubTask(subtask2);
+    TaskStatus actual = tasksManager.getEpicById(epicId).getTaskStatus();
+
+    assertEquals(TaskStatus.DONE, actual,
+            "При изменение статуса всех сабтасок на DONE статус Эпика не меняется на DONE");
   }
 
   @Test
   public void shouldEpicStatusIsInProgressWhenSubtaskStatusNewAndDone() {
-    manager.setSubtaskStatus(subTask1, TaskStatus.NEW);
-    manager.setSubtaskStatus(subTask2, TaskStatus.DONE);
-    TaskStatus actual = manager.getEpicById(epicId).getTaskStatus();
-    assertEquals(TaskStatus.IN_PROGRESS, actual, "Неправильный статус Эпика");
+    Epic epic = new Epic("Epic1", "Epic1_description");
+    final int epicId = tasksManager.createEpic(epic);
+    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description",  TaskStatus.DONE, epicId);
+    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", TaskStatus.NEW, epicId);
+    tasksManager.createSubTask(subtask1);
+    tasksManager.createSubTask(subtask2);
+
+    subtask1.setSubtaskStatus(TaskStatus.NEW);
+    subtask2.setSubtaskStatus(TaskStatus.DONE);
+    TaskStatus actual = tasksManager.getEpicById(epicId).getTaskStatus();
+
+    assertEquals(TaskStatus.IN_PROGRESS, actual,
+            "Не меняется статус эпика на IN_PROGRESS при подзадачах со статусом NEW и DONE");
   }
 
   @Test
   public void shouldEpicStatusIsInProgressWhenAllSubtasksStatusIsInProgress() {
-    manager.setSubtaskStatus(subTask1, TaskStatus.IN_PROGRESS);
-    manager.setSubtaskStatus(subTask2, TaskStatus.IN_PROGRESS);
-    TaskStatus actual = manager.getEpicById(epicId).getTaskStatus();
-    assertEquals(TaskStatus.IN_PROGRESS, actual, "Неправильный статус Эпика");
+    Epic epic = new Epic("Epic1", "Epic1_description");
+    final int epicId = tasksManager.createEpic(epic);
+    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", TaskStatus.NEW, epicId);
+    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", TaskStatus.NEW, epicId);
+    tasksManager.createSubTask(subtask1);
+    tasksManager.createSubTask(subtask2);
+
+    subtask1.setSubtaskStatus(TaskStatus.IN_PROGRESS);
+    subtask2.setSubtaskStatus(TaskStatus.IN_PROGRESS);
+    tasksManager.updateSubTask(subtask1);
+    tasksManager.updateSubTask(subtask2);
+    TaskStatus actual = tasksManager.getEpicById(epicId).getTaskStatus();
+
+    assertEquals(TaskStatus.IN_PROGRESS, actual,
+            "Не меняется статус эпика на IN_PROGRESS при подзадачах со статусом IN_PROGRESS");
   }
 }

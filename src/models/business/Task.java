@@ -3,6 +3,10 @@ package models.business;
 import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
+import java.text.DateFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -11,6 +15,24 @@ public class Task {
     protected String taskName;
     protected TaskStatus taskStatus;
     protected String taskDescription;
+    protected LocalDateTime startTime;
+    protected long duration;
+
+    public LocalDateTime getEndTime() {
+        try {
+            return LocalDateTime.from(startTime).plusMinutes(duration);
+        } catch (NullPointerException ex) {
+            throw new RuntimeException("Время начала выполнения задачи не указано");
+        }
+    }
+
+    public Task(String taskName, String taskDescription, TaskStatus taskStatus, LocalDateTime startTime, long duration) {
+        this.taskName = taskName;
+        this.taskDescription = taskDescription;
+        this.taskStatus = taskStatus;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
 
     public Task(String taskName, String taskDescription, TaskStatus taskStatus) {
         this.taskName = taskName;

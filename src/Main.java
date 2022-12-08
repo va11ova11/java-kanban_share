@@ -1,73 +1,28 @@
 import exception.ManagerSaveException;
 import models.business.Epic;
-import models.business.SubTask;
+import models.business.Subtask;
+import models.business.Task;
 import models.business.Util.Managers;
 import models.business.enums.TaskStatus;
 import services.manager.TasksManager;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import static java.time.Month.FEBRUARY;
+import static java.time.Month.JANUARY;
+
 public class Main {
     public static void main(String[] args) throws ManagerSaveException {
-        TasksManager manager = Managers.getDefault();
+        TasksManager tasksManager = Managers.getDefault();
 
-        Epic epic1 = new Epic("Epic#1", "Epic1 description");
-        Epic epic2 = new Epic("Epic#2", "Epic2 description");
-        int epicId1 = manager.createEpic(epic1);
-        int epicId2 = manager.createEpic(epic2);
+        Task task1 = new Task("Task1", "Task1_desc", TaskStatus.NEW,
+                LocalDateTime.of(2022, FEBRUARY, 10, 20, 0), 100);
 
-        SubTask subTask1 = new SubTask("Subtask in Epic 1", "Subtask1 description", TaskStatus.NEW, epicId1);
-        SubTask subtask2 = new SubTask("Subtask in Epic 1", "Subtask2 description", TaskStatus.IN_PROGRESS, epicId1);
-        SubTask subtask3 = new SubTask("Subtask in Epic 2", "Subtask3 description", TaskStatus.DONE, epicId2);
-        int subtaskId1 = manager.createSubTask(subTask1);
-        int subtaskId2 = manager.createSubTask(subtask2);
-        int subtaskId3 = manager.createSubTask(subtask3);
+        Task task2 = new Task("Task1", "Task1_desc", TaskStatus.NEW);
 
-        System.out.println("Добавить первую задачу (Эпик) в список истории");
-        manager.getEpicById(epicId1);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
+        System.out.println(task1.getEndTime());
+        System.out.println(task2.getEndTime());
 
-        System.out.println("Добавить вторую задачу (Сабтаск) в список");
-        manager.getSubTaskById(subtaskId1);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
-
-        System.out.println("Добавить третью задачу (Сабтаск) в список");
-        manager.getSubTaskById(subtaskId2);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
-
-        System.out.println("Добавить четвёртую задачу (Сабтаск) в список");
-        manager.getSubTaskById(subtaskId3);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
-
-        System.out.println("Добавить пятую задачу (Сабтаск) в список");
-        manager.getEpicById(epicId2);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
-
-
-        System.out.println("Удалить 1 задачу (Эпик1)");
-        manager.deleteTaskById(epicId1);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
-
-        System.out.println("Удалить 2 задачу (Сабтаск3)");
-        manager.deleteTaskById(subtaskId3);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
-
-        System.out.println("Удалить последнюю задачу (Епик2)");
-        manager.deleteTaskById(epicId2);
-        manager.printHistory();
-        System.out.println("------------------------------------");
-        System.out.println();
     }
 }
