@@ -1,12 +1,26 @@
 package models.business;
 
+import java.time.format.DateTimeFormatter;
 import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private ArrayList<Integer> subTasksId;
+    private final ArrayList<Integer> subTasksId;
+    private LocalDateTime endTime;
+
+    @Override
+    public LocalDateTime getEndTime() {
+        return endTime;
+    }
+
+    public void setEndTime(LocalDateTime endTime) {
+        this.endTime = endTime;
+    }
+
 
     public Epic(String epicName, String epicDescription) {
         super(epicName, epicDescription);
@@ -14,36 +28,16 @@ public class Epic extends Task {
     }
 
     public Epic(int taskId, TaskType taskType, String taskName, String taskDescription,
+        TaskStatus taskStatus, LocalDateTime startTime, long duration, LocalDateTime endTime) {
+        super(taskId, taskType, taskName, taskDescription, taskStatus, startTime, duration);
+        subTasksId = new ArrayList<>();
+        this.endTime = endTime;
+    }
+
+    public Epic(int taskId, TaskType taskType, String taskName, String taskDescription,
         TaskStatus taskStatus) {
         super(taskId, taskType, taskName, taskDescription, taskStatus);
-    }
-
-    public TaskType getEpicType(){
-        return taskType;
-    }
-
-    public String getEpicName() {
-        return taskName;
-    }
-
-    public void setEpicName(String taskName) {
-        this.taskName = taskName;
-    }
-
-    public String getEpicDescription() {
-        return taskDescription;
-    }
-
-    public void setEpicDescription(String taskDescription) {
-        this.taskDescription = taskDescription;
-    }
-
-    public TaskStatus getEpicStatus() {
-        return taskStatus;
-    }
-
-    public void setEpicStatus(TaskStatus taskStatus) {
-        this.taskStatus = taskStatus;
+        subTasksId = new ArrayList<>();
     }
 
     public ArrayList<Integer> getSubTasksId() {
@@ -65,9 +59,15 @@ public class Epic extends Task {
         subTasksId.clear();
     }
 
-    @Override
     public String toString() {
-        return id + "," + TaskType.EPIC + "," + taskName + "," + taskStatus + "," + taskDescription;
+        if (startTime == null) {
+            return id + "," + TaskType.EPIC + "," + taskName + "," + taskStatus + ","
+                + taskDescription;
+        } else {
+            return id + "," + TaskType.EPIC + "," + taskName + "," + taskStatus + ","
+                + taskDescription
+                + "," + startTime.format(formatter) + "," + endTime.format(formatter);
+        }
     }
 
     @Override

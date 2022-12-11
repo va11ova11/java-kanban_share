@@ -1,12 +1,11 @@
 package models.business;
 
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
-import java.text.DateFormat;
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class Task {
@@ -17,6 +16,10 @@ public class Task {
     protected String taskDescription;
     protected LocalDateTime startTime;
     protected long duration;
+    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy;HH:mm");
+
+
+
 
     public LocalDateTime getEndTime() {
         try {
@@ -25,8 +28,8 @@ public class Task {
             throw new RuntimeException("Время начала выполнения задачи не указано");
         }
     }
-
-    public Task(String taskName, String taskDescription, TaskStatus taskStatus, LocalDateTime startTime, long duration) {
+    public Task(String taskName, String taskDescription, TaskStatus taskStatus,
+        LocalDateTime startTime, long duration) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
@@ -45,6 +48,17 @@ public class Task {
     }
 
     public Task (int id, TaskType taskType, String taskName, String taskDescription,
+        TaskStatus taskStatus, LocalDateTime startTime, long duration) {
+        this.id = id;
+        this.taskType = taskType;
+        this.taskName = taskName;
+        this.taskDescription = taskDescription;
+        this.taskStatus = taskStatus;
+        this.startTime = startTime;
+        this.duration = duration;
+    }
+
+    public Task (int id, TaskType taskType, String taskName, String taskDescription,
         TaskStatus taskStatus) {
         this.id = id;
         this.taskType = taskType;
@@ -53,31 +67,46 @@ public class Task {
         this.taskStatus = taskStatus;
     }
 
-    public TaskType getTaskType(){
+    public LocalDateTime getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+    public void setDuration(long duration) {
+        this.duration = duration;
+    }
+
+    public TaskType getType(){
         return taskType;
     }
 
-    public String getTaskName() {
+    public String getName() {
         return taskName;
     }
 
-    public void setTaskName(String taskName) {
+    public void setName(String taskName) {
         this.taskName = taskName;
     }
 
-    public String getTaskDescription() {
+    public String getDescription() {
         return taskDescription;
     }
 
-    public void setTaskDescription(String taskDescription) {
+    public void setDescription(String taskDescription) {
         this.taskDescription = taskDescription;
     }
 
-    public TaskStatus getTaskStatus() {
+    public TaskStatus getStatus() {
         return taskStatus;
     }
 
-    public void setTaskStatus(TaskStatus taskStatus) {
+    public void setStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
 
@@ -89,9 +118,15 @@ public class Task {
         this.id = id;
     }
 
-    @Override
-    public String toString() {
-        return id + "," + TaskType.TASK + "," + taskName + "," + taskStatus + "," + taskDescription;
+
+    public String
+    toString() {
+        if (startTime == null) {
+            return id + "," + TaskType.EPIC + "," + taskName + "," + taskStatus + ","
+                + taskDescription;
+        }
+        return id + "," + TaskType.TASK + "," + taskName + "," + taskStatus + "," + taskDescription + ","
+            + startTime.format(formatter) + "," + getEndTime().format(formatter);
     }
 
     @Override

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.Map;
 import models.business.Epic;
@@ -49,7 +50,7 @@ public abstract class TaskManagerTest<T extends TasksManager> {
     final int epicId = tasksManager.createEpic(epic);
     final Epic savedEpic = tasksManager.getEpicById(epicId);
 
-    assertEquals(epic.getTaskStatus(), TaskStatus.NEW,
+    assertEquals(epic.getStatus(), TaskStatus.NEW,
         "Неправильно рассчитывается статус Эпика");
     assertEquals(epic, savedEpic, "Эпики не равны");
     assertNotNull(savedEpic, "Эпик не найден");
@@ -92,8 +93,9 @@ public abstract class TaskManagerTest<T extends TasksManager> {
     Task deleteTask = tasksManager.getTaskById(taskId1);
     assertNull(deleteTask, "Таска не удалилась");
 
-    tasksManager.deleteTaskById(5);
-    Map<Integer, Task> tasks = tasksManager.getTasks();
-    assertEquals(1, tasks.size(), "Не верное удаление по Id");
+    NullPointerException ex = assertThrows(
+        NullPointerException.class,
+        () -> tasksManager.deleteTaskById(5));
+    assertEquals("Передан не верный идентификатор", ex.getMessage());
   }
 }

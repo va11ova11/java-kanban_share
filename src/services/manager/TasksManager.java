@@ -1,4 +1,5 @@
 package services.manager;
+import java.util.Set;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
@@ -9,6 +10,7 @@ import models.business.enums.TaskStatus;
 import services.manager.history.HistoryManager;
 
 public interface TasksManager {
+    Set<Task> getPrioritizedTasks();
     HistoryManager getHistoryManager();
     int createTask(Task task);
     int createEpic(Epic epic);
@@ -29,5 +31,5 @@ public interface TasksManager {
     List<Task> getHistory();
     void printHistory();
     void updateSubTask(Subtask subTask);
-   // void setSubtaskStatus(Subtask subTask, TaskStatus taskStatus);
+    void updateEpic(Epic updateEpic);
 }

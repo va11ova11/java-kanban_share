@@ -138,7 +138,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     if (!customLinkedList.historyMap.containsKey(id)) {
       return;
     }
-    if (customLinkedList.historyMap.get(id).data.getTaskType() == TaskType.EPIC) {
+    if (customLinkedList.historyMap.get(id).data.getType() == TaskType.EPIC) {
       Epic epic = (Epic) customLinkedList.historyMap.get(id).data;
       for (Integer subTaskId : epic.getSubTasksId()) {
         if (customLinkedList.historyMap.containsKey(subTaskId)) {

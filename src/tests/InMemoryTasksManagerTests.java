@@ -28,11 +28,11 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
   public void shouldUpdateTask() {
     Task task = new Task("Task1", "Task1_desc");
     final int taskId = tasksManager.createTask(task);
-    task.setTaskName("Task1_update");
+    task.setName("Task1_update");
     tasksManager.updateTask(task);
     Task updateTask = tasksManager.getTaskById(taskId);
 
-    assertEquals(updateTask.getTaskName(), "Task1_update", "Таска не обновляется");
+    assertEquals(updateTask.getName(), "Task1_update", "Таска не обновляется");
   }
 
 
@@ -43,12 +43,12 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
     Subtask subTask = new Subtask("SubTask1", "SubTask1_desc", TaskStatus.NEW, epicId1);
     final int subTaskId = tasksManager.createSubTask(subTask);
 
-    subTask.setTaskStatus(TaskStatus.DONE);
+    subTask.setStatus(TaskStatus.DONE);
     tasksManager.updateSubTask(subTask);
     Subtask updateSubtask = tasksManager.getSubTaskById(subTaskId);
 
-    assertEquals(epic.getEpicStatus(), TaskStatus.DONE, "Не изменяется статус эпика приудалении Сабтаски");
-    assertEquals(updateSubtask.getSubtaskStatus(), TaskStatus.DONE, "Не обновляется Сабтаска");
+    assertEquals(epic.getStatus(), TaskStatus.DONE, "Не изменяется статус эпика приудалении Сабтаски");
+    assertEquals(updateSubtask.getStatus(), TaskStatus.DONE, "Не обновляется Сабтаска");
   }
 
 
@@ -100,7 +100,7 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
     List<Subtask> subTasksInEpic = tasksManager.getSubTasksInEpic(epic);
 
     assertEquals(0, subTasksInEpic.size(), "Не удаляются Сабтаски");
-    assertEquals(TaskStatus.NEW, epic.getTaskStatus(), "Не меняется статус Эпика после удаления Сабтасок");
+    assertEquals(TaskStatus.NEW, epic.getStatus(), "Не меняется статус Эпика после удаления Сабтасок");
   }
 
   @Test
@@ -127,6 +127,6 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
     Subtask subTask = new Subtask("SubTask1", "Sub1_desc", TaskStatus.DONE, epicId1);
     tasksManager.createSubTask(subTask);
 
-    assertEquals(epic.getTaskStatus(), TaskStatus.DONE);
+    assertEquals(epic.getStatus(), TaskStatus.DONE);
   }
 }
