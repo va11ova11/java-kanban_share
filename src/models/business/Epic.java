@@ -1,6 +1,5 @@
 package models.business;
 
-import java.time.format.DateTimeFormatter;
 import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
@@ -21,6 +20,12 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
+    public void reset() {
+        removeSubTasksIdInEpic();
+        taskStatus = TaskStatus.NEW;
+        startTime = null;
+        endTime = null;
+    }
 
     public Epic(String epicName, String epicDescription) {
         super(epicName, epicDescription);

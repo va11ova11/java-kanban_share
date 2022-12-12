@@ -1,12 +1,10 @@
 package models.business;
 
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
+import java.util.Objects;
 import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
-
-import java.time.LocalDateTime;
-import java.util.Objects;
 
 public class Task {
     protected int id;
@@ -29,6 +27,15 @@ public class Task {
         }
     }
     public Task(String taskName, String taskDescription, TaskStatus taskStatus,
+        String startTime, long duration) {
+        this.taskName = taskName;
+        this.taskDescription = taskDescription;
+        this.taskStatus = taskStatus;
+        this.startTime = LocalDateTime.parse(startTime, formatter);
+        this.duration = duration;
+    }
+
+    public Task(String taskName, String taskDescription, TaskStatus taskStatus,
         LocalDateTime startTime, long duration) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
@@ -45,6 +52,17 @@ public class Task {
     public Task(String taskName, String taskDescription) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
+    }
+
+    public Task (int id, TaskType taskType, String taskName, String taskDescription,
+        TaskStatus taskStatus, String startTime, long duration) {
+        this.id = id;
+        this.taskType = taskType;
+        this.taskName = taskName;
+        this.taskDescription = taskDescription;
+        this.taskStatus = taskStatus;
+        this.startTime = LocalDateTime.parse(startTime, formatter);
+        this.duration = duration;
     }
 
     public Task (int id, TaskType taskType, String taskName, String taskDescription,
@@ -71,9 +89,18 @@ public class Task {
         return startTime;
     }
 
+    public void setStartTime(String startTime) {
+        if(startTime == null) {
+            this.startTime = null;
+        } else {
+            this.startTime = LocalDateTime.parse(startTime, formatter);
+        }
+    }
+
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
+
 
     public long getDuration() {
         return duration;
@@ -118,11 +145,10 @@ public class Task {
         this.id = id;
     }
 
-
-    public String
-    toString() {
+    @Override
+    public String toString() {
         if (startTime == null) {
-            return id + "," + TaskType.EPIC + "," + taskName + "," + taskStatus + ","
+            return id + "," + TaskType.TASK + "," + taskName + "," + taskStatus + ","
                 + taskDescription;
         }
         return id + "," + TaskType.TASK + "," + taskName + "," + taskStatus + "," + taskDescription + ","

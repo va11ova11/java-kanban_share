@@ -20,18 +20,12 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
     super(new FileBackedTasksManager());
   }
 
-
   @Test
-  public void shouldThrowManagerSaveExceptionWhenSaveTasksAndEpicsAndSubTaskIsEmpty() {
-    ManagerSaveException ex = assertThrows(ManagerSaveException.class,
-            fileBackedTasksManager::save);
-    assertNotEquals("Ошибка записи в файл", ex.getMessage());
-  }
-
-  @Test
-  public void shouldHistoryIsEmpty() {
+  public void shouldWhenDeleteTaskHistoryIsEmpty() {
     Task task = new Task("Task1", "Task1_desc", TaskStatus.NEW);
-    fileBackedTasksManager.createTask(task);
+    int taskId = fileBackedTasksManager.createTask(task);
+    fileBackedTasksManager.getTaskById(taskId);
+    fileBackedTasksManager.deleteTaskById(taskId);
 
     List<Task> history = fileBackedTasksManager.getHistory();
     assertNull(history, "История задач не пуста");

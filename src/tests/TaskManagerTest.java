@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import models.business.Epic;
 import models.business.Subtask;
@@ -85,13 +86,12 @@ public abstract class TaskManagerTest<T extends TasksManager> {
   @Test
   public void deleteTaskById() {
     Task task1 = new Task("Task1", "Task1_disc", TaskStatus.NEW);
-    Task task2 = new Task("Task1", "Task1_disc", TaskStatus.NEW);
     final int taskId1 = tasksManager.createTask(task1);
-    final int taskId2 = tasksManager.createTask(task2);
+    Epic epic = new Epic("Task1", "Task1_desc");
+    tasksManager.createEpic(epic);
 
     tasksManager.deleteTaskById(taskId1);
-    Task deleteTask = tasksManager.getTaskById(taskId1);
-    assertNull(deleteTask, "Таска не удалилась");
+    assertEquals(0, tasksManager.getTasks().size());
 
     NullPointerException ex = assertThrows(
         NullPointerException.class,

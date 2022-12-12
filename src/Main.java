@@ -16,41 +16,27 @@ public class Main {
     public static void main(String[] args) throws ManagerSaveException {
         TasksManager tasksManager = Managers.getDefault();
 
-        Task task1 = new Task("Task1", "Task1_desc", TaskStatus.NEW,
-                LocalDateTime.of(2022, FEBRUARY, 10, 20, 0), 100);
+        Task taskHasTime = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
+        int task1 = tasksManager.createTask(taskHasTime);
 
-        Task task2 = new Task("Task1", "Task1_desc", TaskStatus.NEW);
+        Task taskHasTime2 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;10:00", 60);
+        int task2 = tasksManager.createTask(taskHasTime2);
 
-//        System.out.println(task1.getEndTime());
-//        System.out.println(task2.getEndTime());
+        Epic epic = new Epic("Epic1", "Epic1_desc");
+        int epicId = tasksManager.createEpic(epic);
 
+        Subtask subtask = new Subtask("Subtask1", "Subtask_desc1", TaskStatus.DONE, "10.01.2022;08:00", 30, epicId);
+        tasksManager.createSubTask(subtask);
 
-        Epic epic1 = new Epic("Epic1", "Epic1_desc");
-        int epicId = tasksManager.createEpic(epic1);
-        Subtask subtask1 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
-            LocalDateTime.of(2022, FEBRUARY, 15, 10, 0), 30, epicId);
-        tasksManager.createSubTask(subtask1);
-
-        Subtask subtask2 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
-            LocalDateTime.of(2022, FEBRUARY, 14, 10, 0), 30, epicId);
-        tasksManager.createSubTask(subtask2);
-
-        Subtask subtask4 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,epicId);
-        tasksManager.createSubTask(subtask4);
-
-        Subtask subtask3 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
-            LocalDateTime.of(2022, FEBRUARY, 17, 10, 0), 30, epicId);
-        tasksManager.createSubTask(subtask3);
-
-        Subtask subtask5 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,epicId);
-        tasksManager.createSubTask(subtask5);
-
-        tasksManager.deleteAllSubTasksInEpic(epic1);
+        Task taskHasTime3 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;07:00", 30);
+        tasksManager.createTask(taskHasTime3);
+        tasksManager.printAllTask();
 
 
+        System.out.println("------------");
+        System.out.println("Задачи отсортированные по времени выполнения");
         System.out.println(tasksManager.getPrioritizedTasks());
 
-        System.out.println(epic1.getStartTime());
 
     }
 }

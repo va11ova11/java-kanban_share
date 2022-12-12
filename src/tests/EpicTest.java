@@ -1,6 +1,8 @@
 package tests;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.time.LocalDateTime;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Util.Managers;
@@ -25,6 +27,16 @@ public class EpicTest {
 
   @Test
   public void shouldEpicStatusIsNewWhenSubtaskListIsEmpty() {
+    Epic epic = new Epic("Epic1", "Epic1_description");
+    final int epicId = tasksManager.createEpic(epic);
+
+    TaskStatus actual = tasksManager.getEpicById(epicId).getStatus();
+
+    assertEquals(TaskStatus.NEW, actual, "Неправильно задаётся статус эпика при создании");
+  }
+
+  @Test
+  public void shouldEpicStatusIsNewWhenDeleteAllSubtask() {
     Epic epic = new Epic("Epic1", "Epic1_description");
     final int epicId = tasksManager.createEpic(epic);
     Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", epicId);
@@ -110,4 +122,18 @@ public class EpicTest {
     assertEquals(TaskStatus.IN_PROGRESS, actual,
             "Не меняется статус эпика на IN_PROGRESS при подзадачах со статусом IN_PROGRESS");
   }
+
+  @Test
+  public void shouldEndTimeIsTrue() {
+    Epic epic = new Epic ("Epic1", "Epic1_desc");
+    int epicId1 = tasksManager.createEpic(epic);
+    Subtask subtask1 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
+        "01.01.2022;10:00", 30, epicId1);
+    tasksManager.createSubTask(subtask1);
+
+    LocalDateTime expectedEndTime = LocalDateTime.of(2022, 1, 1, 10, 30);
+
+    assertEquals(expectedEndTime, epic.getEndTime(), "Не правильно рассчитывается время очконсания эпика");
+  }
+
 }

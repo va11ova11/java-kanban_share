@@ -116,6 +116,20 @@ public class InMemoryHistoryManager implements HistoryManager {
   }
 
   @Override
+  public String historyToString() {
+    List<Task> history = customLinkedList.getHistory();
+    if (history == null) {
+      return "";
+    }
+    StringBuilder idTaskFromHistory = new StringBuilder();
+    for (Task task : history) {
+      idTaskFromHistory.append(task.getId());
+      idTaskFromHistory.append(",");
+    }
+    return idTaskFromHistory.toString();
+  }
+
+  @Override
   public void addTaskInHistory(Task task) {
     if (customLinkedList.historyMap.containsKey(task.getId())) {
       removeInHistory(task.getId());

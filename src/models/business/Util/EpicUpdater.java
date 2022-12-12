@@ -1,4 +1,4 @@
-package services.manager.time;
+package models.business.Util;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -12,17 +12,13 @@ public class EpicUpdater {
   public Epic updateEpicOnSubtaskOperation(Subtask subtask, Epic updateEpic,
       Map<Integer, Subtask> subtasks) {
     updateEpicDuration(subtask, updateEpic);
-    updateEpicStartTime(subtask, updateEpic, subtasks);
-    updateEpicEndTime(subtask, updateEpic, subtasks);
     checkEpicStatus(updateEpic, subtasks);
+    //Если задача без времени
+    if(subtask.getStartTime() != null) {
+      updateEpicStartTime(subtask, updateEpic, subtasks);
+      updateEpicEndTime(subtask, updateEpic, subtasks);
+    }
     return updateEpic;
-  }
-
-  public void resetEpic(Epic resetEpic) {
-    resetEpic.removeSubTasksIdInEpic();
-    resetEpic.setStatus(TaskStatus.NEW);
-    resetEpic.setStartTime(null);
-    resetEpic.setEndTime(null);
   }
 
   private void updateEpicDuration(Subtask subtask, Epic updateEpic) {
