@@ -76,6 +76,15 @@ public abstract class TaskManagerTest<T extends TasksManager> {
     assertEquals(subTask, savedSubtask, "Сабтаски не равны");
     assertNotNull(subTask, "Сабтаск не найден");
 
+    Subtask notCorrectEpicIdSubTask = new Subtask("NewSubTask", "NewSub_desc",
+        TaskStatus.NEW, 10);
+    RuntimeException ex = assertThrows(
+        RuntimeException.class,
+        () -> tasksManager.createSubTask(notCorrectEpicIdSubTask)
+    );
+    assertEquals("Не существует эпика для подзадачи", ex.getMessage());
+
+
     final Map<Integer, Subtask> subTasks = tasksManager.getSubTasks();
 
     assertEquals(1, subTasks.size(), "Неверное количество Сабтасков");
@@ -97,5 +106,47 @@ public abstract class TaskManagerTest<T extends TasksManager> {
         NullPointerException.class,
         () -> tasksManager.deleteTaskById(5));
     assertEquals("Передан не верный идентификатор", ex.getMessage());
+  }
+
+  @Test
+  public void shouldExceptionWhenCreatingTaskEqualStartTime() {
+    Task taskHasTime = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
+    tasksManager.createTask(taskHasTime);
+
+    Task taskHasTime2 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
+
+    RuntimeException ex = assertThrows(
+        RuntimeException.class,
+        () -> tasksManager.createTask(taskHasTime2)
+    );
+    assertEquals("Задача на это время уже существует", ex.getMessage());
+  }
+
+  @Test
+  public void shouldExceptionWhenCreatingTaskNotCorrectStartTime() {
+    Task taskHasTime = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
+    tasksManager.createTask(taskHasTime);
+
+    Task taskHasTime2 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:30", 60);
+
+    RuntimeException ex = assertThrows(
+        RuntimeException.class,
+        () -> tasksManager.createTask(taskHasTime2)
+    );
+    assertEquals("Задача на это время уже существует", ex.getMessage());
+  }
+
+  @Test
+  public void shouldExceptionWhenCreatingTaskNotCorrectEndTime() {
+    Task taskHasTime = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
+    tasksManager.createTask(taskHasTime);
+
+    Task taskHasTime2 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;08:00", 90);
+
+    RuntimeException ex = assertThrows(
+        RuntimeException.class,
+        () -> tasksManager.createTask(taskHasTime2)
+    );
+    assertEquals("Задача на это время уже существует", ex.getMessage());
   }
 }

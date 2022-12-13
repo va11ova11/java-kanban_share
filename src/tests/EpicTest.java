@@ -124,16 +124,24 @@ public class EpicTest {
   }
 
   @Test
-  public void shouldEndTimeIsTrue() {
+  public void shouldEndTimeAndStartTimeIsTrue() {
     Epic epic = new Epic ("Epic1", "Epic1_desc");
     int epicId1 = tasksManager.createEpic(epic);
+
+
     Subtask subtask1 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
         "01.01.2022;10:00", 30, epicId1);
     tasksManager.createSubTask(subtask1);
 
-    LocalDateTime expectedEndTime = LocalDateTime.of(2022, 1, 1, 10, 30);
+    Subtask subtask2 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
+        "01.01.2022;12:00", 30, epicId1);
+    tasksManager.createSubTask(subtask2);
 
-    assertEquals(expectedEndTime, epic.getEndTime(), "Не правильно рассчитывается время очконсания эпика");
+
+    LocalDateTime expectedStartTime = LocalDateTime.of(2022, 1, 1, 10, 0);
+    LocalDateTime expectedEndTime = LocalDateTime.of(2022, 1, 1, 12, 30);
+
+    assertEquals(expectedStartTime, epic.getStartTime(), "Не правильно рассчитывается время начала эпика");
+    assertEquals(expectedEndTime, epic.getEndTime(), "Не правильно рассчитывается время очкончания эпика");
   }
-
 }

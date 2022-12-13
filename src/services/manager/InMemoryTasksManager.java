@@ -53,19 +53,19 @@ public class InMemoryTasksManager implements TasksManager {
     final int taskId = ++id;
     task.setId(taskId);
     tasks.put(taskId, task);
-    if (task.getStartTime() != null) {
-      checkTheTaskCompletionTime(task);
-    }
+    checkTheTaskCompletionTime(task);
     return taskId;
   }
 
   private void checkTheTaskCompletionTime(Task task) {
-    if (prioritizedTask.size() == 0) {
+    if (prioritizedTask.size() == 0 || task.getStartTime() == null) {
       prioritizedTask.add(task);
     } else {
       for (Task t : prioritizedTask) {
-        if (t.getStartTime().equals(task.getStartTime()) ||
-            (task.getStartTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime()))) {
+        boolean equalsStartTime = t.getStartTime().equals(task.getStartTime());
+        boolean notCorrectEndTime = task.getEndTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime());
+        boolean notCorrectStartTime = task.getStartTime().isAfter(t.getStartTime()) && task.getStartTime().isBefore(t.getEndTime());
+        if ( equalsStartTime || notCorrectEndTime || notCorrectStartTime ){
           throw new RuntimeException("Задача на это время уже существует");
         }
       }
@@ -92,10 +92,7 @@ public class InMemoryTasksManager implements TasksManager {
       final Epic updateEpic = epics.get(subtask.getEpicId());
       updateEpic.addSubTaskInEpicList(subtaskId);
       epicUpdater.checkEpicStatus(updateEpic, subtasks);
-      //Если время указано
-      if (subtask.getStartTime() != null) {
-        checkTheTaskCompletionTime(subtask);
-      }
+      checkTheTaskCompletionTime(subtask);
       Epic newEpic = epicUpdater.updateEpicOnSubtaskOperation(subtask, updateEpic, subtasks);
       updateEpic(newEpic);
       return subtaskId;
