@@ -88,7 +88,7 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
 
 
   @Test
-  public void deleteAllSubTasksInEpic() {
+  public void deleteAllSubtasksInEpic() {
     Epic epic = new Epic("Epic1", "Epic1_desc");
     final int epicId1 = tasksManager.createEpic(epic);
     Subtask subtask1 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW, epicId1);
@@ -97,7 +97,7 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
     tasksManager.createSubTask(subtask2);
 
     tasksManager.deleteAllSubTasksInEpic(epic);
-    List<Subtask> subTasksInEpic = tasksManager.getSubTasksInEpic(epic);
+    List<Subtask> subTasksInEpic = tasksManager.getSubtasksInEpic(epic);
 
     assertEquals(0, subTasksInEpic.size(), "Не удаляются Сабтаски");
     assertEquals(TaskStatus.NEW, epic.getStatus(), "Не меняется статус Эпика после удаления Сабтасок");

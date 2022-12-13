@@ -3,6 +3,7 @@ import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
 import models.business.Util.Managers;
+import models.business.Util.Printer;
 import models.business.enums.TaskStatus;
 import services.manager.TasksManager;
 
@@ -21,6 +22,8 @@ public class Main {
 
         Task taskHasTime2 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;10:00", 60);
         int task2 = tasksManager.createTask(taskHasTime2);
+        taskHasTime2.setStartTime("10.01.2022;06:00");
+        tasksManager.updateTask(taskHasTime2);
 
         Epic epic = new Epic("Epic1", "Epic1_desc");
         int epicId = tasksManager.createEpic(epic);
@@ -30,7 +33,7 @@ public class Main {
 
         Task taskHasTime3 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;07:00", 30);
         tasksManager.createTask(taskHasTime3);
-        tasksManager.printAllTask();
+        Printer.printAllTask(tasksManager);
 
 
         System.out.println("------------");

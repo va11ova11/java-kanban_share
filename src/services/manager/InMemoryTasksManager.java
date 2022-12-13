@@ -9,10 +9,11 @@ import java.util.TreeSet;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
+import models.business.Util.EpicUpdater;
 import models.business.Util.Managers;
+import models.business.Util.Printer;
 import models.business.enums.TaskStatus;
 import services.manager.history.HistoryManager;
-import models.business.Util.EpicUpdater;
 
 
 public class InMemoryTasksManager implements TasksManager {
@@ -22,15 +23,8 @@ public class InMemoryTasksManager implements TasksManager {
   private final HashMap<Integer, Subtask> subtasks;
   private final HashMap<Integer, Epic> epics;
   private final HistoryManager historyManager;
-  private Set<Task> prioritizedTask;
+  private final Set<Task> prioritizedTask;
   private final EpicUpdater epicUpdater;
-  TaskStartTimeComparator comparator;
-  /*TODO добавить в операции по удалению
-  пересмотреть старые тесты
-  сделать тесты для новых полей
-  доделать методы по получению задач
-   */
-
 
 
   public InMemoryTasksManager() {
@@ -38,7 +32,7 @@ public class InMemoryTasksManager implements TasksManager {
     subtasks = new HashMap<>();
     epics = new HashMap<>();
     historyManager = Managers.getDefaultHistory();
-    comparator = new TaskStartTimeComparator();
+    TaskStartTimeComparator comparator = new TaskStartTimeComparator();
     prioritizedTask = new TreeSet<>(comparator);
     epicUpdater = new EpicUpdater();
     id = 0;
@@ -60,7 +54,6 @@ public class InMemoryTasksManager implements TasksManager {
     task.setId(taskId);
     tasks.put(taskId, task);
     if (task.getStartTime() != null) {
-      prioritizedTask.add(task);
       checkTheTaskCompletionTime(task);
     }
     return taskId;
@@ -68,17 +61,17 @@ public class InMemoryTasksManager implements TasksManager {
 
   private void checkTheTaskCompletionTime(Task task) {
     if (prioritizedTask.size() == 0) {
-      return;
-    }
-    ArrayList<Task> arr = new ArrayList<>(prioritizedTask);
-    for(int i = 1; i < arr.size(); i++) {
-      if(arr.get(i-1).getStartTime().equals(arr.get(i).getStartTime()) ||
-          arr.get(i).getStartTime().isBefore(arr.get(i-1).getEndTime())){
-        throw new RuntimeException("Задача на это время уже существует");
+      prioritizedTask.add(task);
+    } else {
+      for (Task t : prioritizedTask) {
+        if (t.getStartTime().equals(task.getStartTime()) ||
+            (task.getStartTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime()))) {
+          throw new RuntimeException("Задача на это время уже существует");
+        }
       }
+      prioritizedTask.add(task);
     }
-    prioritizedTask.add(task);
-    }
+  }
 
   @Override
   public int createEpic(Epic epic) {
@@ -99,7 +92,7 @@ public class InMemoryTasksManager implements TasksManager {
       final Epic updateEpic = epics.get(subtask.getEpicId());
       updateEpic.addSubTaskInEpicList(subtaskId);
       epicUpdater.checkEpicStatus(updateEpic, subtasks);
-      //Если время не указано
+      //Если время указано
       if (subtask.getStartTime() != null) {
         checkTheTaskCompletionTime(subtask);
       }
@@ -107,7 +100,7 @@ public class InMemoryTasksManager implements TasksManager {
       updateEpic(newEpic);
       return subtaskId;
     }
-    return 0;
+    throw new RuntimeException("Не существует эпика для подзадачи");
   }
 
   @Override
@@ -143,21 +136,6 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public void printHistory() {
-    if (getHistory() != null) {
-      int taskNumber = 1;
-      System.out.println("История просмотренных задач: ");
-      for (Task task : getHistory()) {
-        System.out.println(taskNumber++ + ". " + task);
-      }
-      //System.out.println();
-    } else {
-      System.out.println("История задач пуста.");
-      //System.out.println();
-    }
-  }
-
-  @Override
   public void deleteTaskById(int id) {
     //Удалить задачу из истории если она там есть
     if (historyManager.getHistoryMap().containsKey(id)) {
@@ -188,6 +166,8 @@ public class InMemoryTasksManager implements TasksManager {
   @Override
   public void updateTask(Task task) {
     if (tasks.containsKey(task.getId())) {
+      prioritizedTask.removeIf(t -> t.getId() == task.getId());
+      checkTheTaskCompletionTime(task);
       tasks.put(task.getId(), task);
     } else {
       throw new NullPointerException("Обновляемая таска ещё не создана");
@@ -197,6 +177,8 @@ public class InMemoryTasksManager implements TasksManager {
   @Override
   public void updateSubTask(Subtask subTask) {
     if (subtasks.containsKey(subTask.getId())) {
+      prioritizedTask.removeIf(t -> t.getId() == subTask.getId());
+      checkTheTaskCompletionTime(subTask);
       Epic updateEpic = epics.get(subTask.getEpicId());
       subtasks.put(subTask.getId(), subTask);
       Epic newEpic = epicUpdater.updateEpicOnSubtaskOperation(subTask, updateEpic, subtasks);
@@ -212,31 +194,6 @@ public class InMemoryTasksManager implements TasksManager {
       epics.put(epic.getId(), epic);
     } else {
       throw new NullPointerException("Обновляемый эпик ещё не создан");
-    }
-  }
-
-
-  @Override
-  public void printAllTask() {
-    System.out.println("Задачи:");
-    int j = 1;
-    for (Task task : tasks.values()) {
-      System.out.println(j++ + ". " + task);
-    }
-    System.out.println();
-    if(epics.size() > 0) {
-      System.out.println("Эпики:");
-      for (Epic epic : epics.values()) {
-        int i = 0;
-        System.out.println(epic);
-        System.out.println("---> Подзадачи эпика");
-        for (Subtask subTask : subtasks.values()) {
-          if (subTask.getEpicId() == epic.getId()) {
-            System.out.println(++i + ". " + subTask);
-          }
-        }
-        System.out.println();
-      }
     }
   }
 
@@ -299,7 +256,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public List<Subtask> getSubTasksInEpic(Epic epic) {
+  public List<Subtask> getSubtasksInEpic(Epic epic) {
     if (epics.containsKey(epic.getId())) {
       final List<Integer> subtasksId = epic.getSubTasksId();
       final List<Subtask> subtasksInEpic = new ArrayList<>();

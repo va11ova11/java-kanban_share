@@ -20,6 +20,7 @@ import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
 import models.business.Util.Managers;
+import models.business.Util.Printer;
 import models.business.enums.TaskStatus;
 import services.manager.history.HistoryManager;
 
@@ -179,13 +180,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
   }
 
 
-  public void printAll() {
-    super.printAllTask();
-    super.printHistory();
-  }
-
   public static void main(String[] args) {
-//    FileBackedTasksManager fileBackedTasksManager1 = Managers.getFailBackedTaskManager();
+    FileBackedTasksManager fileBackedTasksManager1 = Managers.getFailBackedTaskManager();
 //
 //    Task taskHasTime = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
 //    int task1 = fileBackedTasksManager1.createTask(taskHasTime);
@@ -205,7 +201,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 //    fileBackedTasksManager1.getTaskById(task1);
 //    fileBackedTasksManager1.getEpicById(epicId);
 //
-//    fileBackedTasksManager1.printAllTask();
+//    Printer.printAllTask(fileBackedTasksManager1);
 //
 //
 //    System.out.println("------------");
@@ -214,6 +210,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 //
 //    System.out.println("Проверка загрузки с файла");
 //    FileBackedTasksManager fileBackedTasksManager2 = Managers.loadFromFile(new File("tasks.csv"));
-//    fileBackedTasksManager2.printAll();
+//    Printer.printTaskAndHistory(fileBackedTasksManager1);
   }
 }
