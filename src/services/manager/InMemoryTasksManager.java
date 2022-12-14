@@ -21,7 +21,7 @@ public class InMemoryTasksManager implements TasksManager {
   protected final HashMap<Integer, Task> tasks;
   protected final HashMap<Integer, Subtask> subtasks;
   protected final HashMap<Integer, Epic> epics;
-  protected final HistoryManager historyManager = Managers.getDefaultHistory();
+  protected final HistoryManager historyManager;
   protected final Set<Task> prioritizedTask;
   private final EpicUpdater epicUpdater;
 
@@ -33,6 +33,7 @@ public class InMemoryTasksManager implements TasksManager {
    */
 
   public InMemoryTasksManager() {
+    historyManager = Managers.getDefaultHistory();
     tasks = new HashMap<>();
     subtasks = new HashMap<>();
     epics = new HashMap<>();
