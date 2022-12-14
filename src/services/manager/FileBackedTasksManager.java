@@ -133,7 +133,9 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
   }
 
   private void addTaskIdInHistory(String historyLine) {
-    int[] historyIds = Arrays.stream(historyLine.split(",")).mapToInt(Integer::valueOf).toArray();
+    String[] stringHistoryId = historyLine.split(",");
+    //Это норм выглядит или лучше циклом?
+    int[] historyIds = Arrays.stream(stringHistoryId).mapToInt(Integer::valueOf).toArray();
       for (int id : historyIds) {
         if (tasks.containsKey(id)) {
           historyManager.add(tasks.get(id));
@@ -146,7 +148,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         }
       }
   }
-
 
   public static void main(String[] args) {
     FileBackedTasksManager fileBackedTasksManager1 = Managers.getFailBackedTaskManager();

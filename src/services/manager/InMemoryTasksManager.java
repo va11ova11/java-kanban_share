@@ -25,6 +25,12 @@ public class InMemoryTasksManager implements TasksManager {
   protected final Set<Task> prioritizedTask;
   private final EpicUpdater epicUpdater;
 
+  /*
+  1. Можно ли оставить мапы protected чтобы не запрашивать их InMemoryTaskManager
+  2. Можно ли historyManager сделать static он в единственном экземпляре для двух менеджеров или
+  подразумевается что 2 менеджера могут работать одновременно и у каждого должен быть свой historyManager
+  3. Ещё коммент в FileBackedTaskManager оставил на 137
+   */
 
   public InMemoryTasksManager() {
     tasks = new HashMap<>();
