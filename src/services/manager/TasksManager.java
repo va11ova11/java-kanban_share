@@ -10,7 +10,6 @@ import services.manager.history.HistoryManager;
 
 public interface TasksManager {
     Set<Task> getPrioritizedTasks();
-    HistoryManager getHistoryManager();
     int createTask(Task task);
     int createEpic(Epic epic);
     int createSubTask(Subtask subTask);

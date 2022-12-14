@@ -1,4 +1,4 @@
-import exception.ManagerSaveException;
+import java.time.LocalDateTime;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
@@ -7,39 +7,32 @@ import models.business.Util.Printer;
 import models.business.enums.TaskStatus;
 import services.manager.TasksManager;
 
-import java.time.LocalDateTime;
-import java.util.Date;
-
-import static java.time.Month.FEBRUARY;
-import static java.time.Month.JANUARY;
-
 public class Main {
-    public static void main(String[] args) throws ManagerSaveException {
+    public static void main(String[] args) {
         TasksManager tasksManager = Managers.getDefault();
 
-        Task taskHasTime = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;09:00", 60);
-        int task1 = tasksManager.createTask(taskHasTime);
+        Task task1 = new Task("First_Task", "FirstTask_description", TaskStatus.NEW,
+            LocalDateTime.of(2022, 12, 14, 10, 0), 60);
+        tasksManager.createTask(task1);
 
-        Task taskHasTime2 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;10:00", 60);
-        int task2 = tasksManager.createTask(taskHasTime2);
-        taskHasTime2.setStartTime("10.01.2022;06:00");
-        tasksManager.updateTask(taskHasTime2);
+        Task task2 = new Task("Second_Task", "SecondTask_description", TaskStatus.DONE,
+            LocalDateTime.of(2022, 12, 14, 8, 0), 30);
+        tasksManager.createTask(task2);
 
         Epic epic = new Epic("Epic1", "Epic1_desc");
-        int epicId = tasksManager.createEpic(epic);
+        int epicId1 = tasksManager.createEpic(epic);
 
-        Subtask subtask = new Subtask("Subtask1", "Subtask_desc1", TaskStatus.DONE, "10.01.2022;08:00", 30, epicId);
-        tasksManager.createSubTask(subtask);
+        Subtask subtask1 = new Subtask("Subtask", "Subtask_description", TaskStatus.IN_PROGRESS,
+            LocalDateTime.of(2022, 12, 14, 6,0), 60, epicId1);
+        tasksManager.createSubTask(subtask1);
 
-        Task taskHasTime3 = new Task("TaskTime", "Task has time", TaskStatus.NEW, "10.01.2022;07:00", 30);
-        tasksManager.createTask(taskHasTime3);
+        Task task4 = new Task("Forth_Task", "ForthTask_description", TaskStatus.NEW,
+            LocalDateTime.of(2022, 12, 14, 20, 0), 120);
+        tasksManager.createTask(task4);
         Printer.printAllTask(tasksManager);
 
 
         System.out.println("------------");
-        System.out.println("Задачи отсортированные по времени выполнения");
-        System.out.println(tasksManager.getPrioritizedTasks());
-
-
+        Printer.printPrioritizedTask(tasksManager);
     }
 }

@@ -1,6 +1,5 @@
 package models.business.Util;
 
-import java.util.Map;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
@@ -8,7 +7,15 @@ import services.manager.TasksManager;
 
 public class Printer {
 
-  public static void printTaskAndHistory(TasksManager tasksManager) {
+  public static void printPrioritizedTask(TasksManager tasksManager) {
+    System.out.println("Задачи отсортированные по времени");
+    int counter = 0;
+    for(Task task :tasksManager.getPrioritizedTasks()) {
+      System.out.println(++counter + ". - " + task.toString());
+    }
+  }
+
+  public static void printAllTaskAndHistory(TasksManager tasksManager) {
     printAllTask(tasksManager);
     printHistory(tasksManager);
   }

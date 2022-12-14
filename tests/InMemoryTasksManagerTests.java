@@ -1,4 +1,3 @@
-package tests;
 
 import models.business.Epic;
 import models.business.Subtask;
@@ -26,7 +25,7 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
 
   @Test
   public void shouldUpdateTask() {
-    Task task = new Task("Task1", "Task1_desc");
+    Task task = new Task("Task1", "Task1_desc", TaskStatus.NEW);
     final int taskId = tasksManager.createTask(task);
     task.setName("Task1_update");
     tasksManager.updateTask(task);
@@ -54,8 +53,8 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
 
   @Test
   public void deleteAllTask() {
-    Task task1 = new Task("Task1", "Task1_desc1");
-    Task task2 = new Task("Task2", "Task1_des2");
+    Task task1 = new Task("Task1", "Task1_desc1", TaskStatus.NEW);
+    Task task2 = new Task("Task2", "Task1_des2", TaskStatus.NEW);
     tasksManager.createTask(task1);
     tasksManager.createTask(task2);
 
@@ -105,8 +104,8 @@ public class InMemoryTasksManagerTests extends TaskManagerTest<InMemoryTasksMana
 
   @Test
   public void getHistory() {
-    Task task1 = new Task("Task1", "Task1_desc1");
-    Task task2 = new Task("Task2", "Task1_des2");
+    Task task1 = new Task("Task1", "Task1_desc1", TaskStatus.NEW);
+    Task task2 = new Task("Task2", "Task1_des2", TaskStatus.NEW);
     final int taskId1 = tasksManager.createTask(task1);
     final int taskId2 = tasksManager.createTask(task2);
     List<Task> expectedHistory = new ArrayList<>(List.of(task1, task2));

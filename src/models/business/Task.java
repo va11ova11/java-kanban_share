@@ -1,7 +1,7 @@
 package models.business;
 
+import static models.business.Util.Constants.formatter;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
@@ -14,10 +14,6 @@ public class Task {
     protected String taskDescription;
     protected LocalDateTime startTime;
     protected long duration;
-    protected DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy;HH:mm");
-
-
-
 
     public LocalDateTime getEndTime() {
         try {
@@ -26,15 +22,6 @@ public class Task {
             throw new RuntimeException("Время начала выполнения задачи не указано");
         }
     }
-    public Task(String taskName, String taskDescription, TaskStatus taskStatus,
-        String startTime, long duration) {
-        this.taskName = taskName;
-        this.taskDescription = taskDescription;
-        this.taskStatus = taskStatus;
-        this.startTime = LocalDateTime.parse(startTime, formatter);
-        this.duration = duration;
-    }
-
     public Task(String taskName, String taskDescription, TaskStatus taskStatus,
         LocalDateTime startTime, long duration) {
         this.taskName = taskName;
@@ -49,20 +36,10 @@ public class Task {
         this.taskDescription = taskDescription;
         this.taskStatus = taskStatus;
     }
+
     public Task(String taskName, String taskDescription) {
         this.taskName = taskName;
         this.taskDescription = taskDescription;
-    }
-
-    public Task (int id, TaskType taskType, String taskName, String taskDescription,
-        TaskStatus taskStatus, String startTime, long duration) {
-        this.id = id;
-        this.taskType = taskType;
-        this.taskName = taskName;
-        this.taskDescription = taskDescription;
-        this.taskStatus = taskStatus;
-        this.startTime = LocalDateTime.parse(startTime, formatter);
-        this.duration = duration;
     }
 
     public Task (int id, TaskType taskType, String taskName, String taskDescription,

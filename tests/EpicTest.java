@@ -1,5 +1,3 @@
-package tests;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.time.LocalDateTime;
@@ -39,8 +37,8 @@ public class EpicTest {
   public void shouldEpicStatusIsNewWhenDeleteAllSubtask() {
     Epic epic = new Epic("Epic1", "Epic1_description");
     final int epicId = tasksManager.createEpic(epic);
-    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", epicId);
-    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", epicId);
+    Subtask subtask1 = new Subtask("Subtask1", "Subtask1_description", TaskStatus.NEW, epicId);
+    Subtask subtask2 = new Subtask("Subtask2", "Subtask2_description", TaskStatus.NEW, epicId);
     tasksManager.createSubTask(subtask1);
     tasksManager.createSubTask(subtask2);
 
@@ -128,13 +126,12 @@ public class EpicTest {
     Epic epic = new Epic ("Epic1", "Epic1_desc");
     int epicId1 = tasksManager.createEpic(epic);
 
-
     Subtask subtask1 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
-        "01.01.2022;10:00", 30, epicId1);
+       LocalDateTime.of(2022, 1, 1, 10, 0) , 30, epicId1);
     tasksManager.createSubTask(subtask1);
 
     Subtask subtask2 = new Subtask("Sub1", "Sub1_desc", TaskStatus.NEW,
-        "01.01.2022;12:00", 30, epicId1);
+        LocalDateTime.of(2022, 1, 1, 12, 0), 30, epicId1);
     tasksManager.createSubTask(subtask2);
 
 

@@ -1,5 +1,7 @@
 package models.business;
 
+import static models.business.Util.Constants.formatter;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 import models.business.enums.TaskStatus;
@@ -8,12 +10,6 @@ import models.business.enums.TaskType;
 public class Subtask extends Task {
 
   private int epicId;
-
-  public Subtask(String taskName, String taskDescription, TaskStatus taskStatus,
-      String startTime, long duration, int epicId) {
-    super(taskName, taskDescription, taskStatus, startTime, duration);
-    this.epicId = epicId;
-  }
 
   public Subtask(String taskName, String taskDescription, TaskStatus taskStatus,
       LocalDateTime startTime, long duration, int epicId) {
@@ -28,12 +24,6 @@ public class Subtask extends Task {
   }
 
   public Subtask(int taskId, TaskType taskType, String taskName, String subtaskDescription,
-      TaskStatus subtaskStatus, String startTime, long duration, int epicId) {
-    super(taskId, taskType, taskName, subtaskDescription, subtaskStatus, startTime, duration);
-    this.epicId = epicId;
-  }
-
-  public Subtask(int taskId, TaskType taskType, String taskName, String subtaskDescription,
       TaskStatus subtaskStatus, LocalDateTime startTime, long duration, int epicId) {
     super(taskId, taskType, taskName, subtaskDescription, subtaskStatus, startTime, duration);
     this.epicId = epicId;
@@ -42,11 +32,6 @@ public class Subtask extends Task {
   public Subtask(int taskId, TaskType taskType, String taskName, String subtaskDescription,
       TaskStatus subtaskStatus, int epicId) {
     super(taskId, taskType, taskName, subtaskDescription, subtaskStatus);
-    this.epicId = epicId;
-  }
-
-  public Subtask(String taskName, String taskDescription, int epicId) {
-    super(taskName, taskDescription);
     this.epicId = epicId;
   }
 

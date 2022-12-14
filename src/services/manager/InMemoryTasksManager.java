@@ -11,7 +11,6 @@ import models.business.Subtask;
 import models.business.Task;
 import models.business.Util.EpicUpdater;
 import models.business.Util.Managers;
-import models.business.Util.Printer;
 import models.business.enums.TaskStatus;
 import services.manager.history.HistoryManager;
 
@@ -19,11 +18,11 @@ import services.manager.history.HistoryManager;
 public class InMemoryTasksManager implements TasksManager {
 
   private int id;
-  private final HashMap<Integer, Task> tasks;
-  private final HashMap<Integer, Subtask> subtasks;
-  private final HashMap<Integer, Epic> epics;
-  private final HistoryManager historyManager;
-  private final Set<Task> prioritizedTask;
+  protected final HashMap<Integer, Task> tasks;
+  protected final HashMap<Integer, Subtask> subtasks;
+  protected final HashMap<Integer, Epic> epics;
+  protected final HistoryManager historyManager = Managers.getDefaultHistory();
+  protected final Set<Task> prioritizedTask;
   private final EpicUpdater epicUpdater;
 
 
@@ -31,7 +30,6 @@ public class InMemoryTasksManager implements TasksManager {
     tasks = new HashMap<>();
     subtasks = new HashMap<>();
     epics = new HashMap<>();
-    historyManager = Managers.getDefaultHistory();
     TaskStartTimeComparator comparator = new TaskStartTimeComparator();
     prioritizedTask = new TreeSet<>(comparator);
     epicUpdater = new EpicUpdater();
@@ -44,11 +42,6 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public HistoryManager getHistoryManager() {
-    return historyManager;
-  }
-
-  @Override
   public int createTask(Task task) {
     final int taskId = ++id;
     task.setId(taskId);
@@ -57,7 +50,7 @@ public class InMemoryTasksManager implements TasksManager {
     return taskId;
   }
 
-  private void checkTheTaskCompletionTime(Task task) {
+  public void checkTheTaskCompletionTime(Task task) {
     if (prioritizedTask.size() == 0 || task.getStartTime() == null) {
       prioritizedTask.add(task);
     } else {
@@ -103,7 +96,7 @@ public class InMemoryTasksManager implements TasksManager {
   @Override
   public Task getTaskById(int id) {
     if (tasks.containsKey(id)) {
-      historyManager.addTaskInHistory(tasks.get(id));
+      historyManager.add(tasks.get(id));
       return tasks.get(id);
     }
     throw new NullPointerException("Не существует таска по данному идентификатору");
@@ -112,7 +105,7 @@ public class InMemoryTasksManager implements TasksManager {
   @Override
   public Epic getEpicById(int epicId) {
     if (epics.containsKey(epicId)) {
-      historyManager.addTaskInHistory(epics.get(epicId));
+      historyManager.add(epics.get(epicId));
       return epics.get(epicId);
     }
     throw new NullPointerException("Не существует эпика по данному идентификатору");
@@ -121,7 +114,7 @@ public class InMemoryTasksManager implements TasksManager {
   @Override
   public Subtask getSubTaskById(int subTaskId) {
     if (subtasks.containsKey(subTaskId)) {
-      historyManager.addTaskInHistory(subtasks.get(subTaskId));
+      historyManager.add(subtasks.get(subTaskId));
       return subtasks.get(subTaskId);
     }
     throw new NullPointerException("Не существует сабтаски по данному идентификатору");
@@ -136,7 +129,7 @@ public class InMemoryTasksManager implements TasksManager {
   public void deleteTaskById(int id) {
     //Удалить задачу из истории если она там есть
     if (historyManager.getHistoryMap().containsKey(id)) {
-      historyManager.removeInHistory(id);
+      historyManager.remove(id);
     }
     if (tasks.containsKey(id)) {
       prioritizedTask.remove(tasks.get(id));
@@ -210,6 +203,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   public void addTaskInMap(Task task) {
+    checkTheTaskCompletionTime(task);
     tasks.put(task.getId(), task);
   }
 
@@ -220,6 +214,7 @@ public class InMemoryTasksManager implements TasksManager {
   public void addSubtaskInMap(Subtask subTask) {
     Epic updateEpic = epics.get(subTask.getEpicId());
     updateEpic.addSubTaskInEpicList(subTask.getId());
+    checkTheTaskCompletionTime(subTask);
     subtasks.put(subTask.getId(), subTask);
   }
 

@@ -1,5 +1,6 @@
 package services.manager.history;
 
+import java.util.function.Function;
 import models.business.Epic;
 import models.business.Task;
 import java.util.*;
@@ -130,9 +131,9 @@ public class InMemoryHistoryManager implements HistoryManager {
   }
 
   @Override
-  public void addTaskInHistory(Task task) {
+  public void add(Task task) {
     if (customLinkedList.historyMap.containsKey(task.getId())) {
-      removeInHistory(task.getId());
+      remove(task.getId());
     }
     customLinkedList.linkLast(task);
   }
@@ -148,7 +149,7 @@ public class InMemoryHistoryManager implements HistoryManager {
   }
 
   @Override
-  public void removeInHistory(int id) {
+  public void remove(int id) {
     if (!customLinkedList.historyMap.containsKey(id)) {
       return;
     }

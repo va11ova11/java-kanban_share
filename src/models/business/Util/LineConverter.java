@@ -1,7 +1,8 @@
 package models.business.Util;
 
+import static models.business.Util.Constants.formatter;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
@@ -9,7 +10,8 @@ import models.business.enums.TaskStatus;
 import models.business.enums.TaskType;
 
 public class LineConverter {
-  public static Task convertLineToTask(String line, DateTimeFormatter formatter) {
+
+  public static Task convertLineToTask(String line) {
     String[] taskInfo = line.split(",");
     int taskId = Integer.parseInt(taskInfo[0]);
     TaskType taskType = TaskType.valueOf(taskInfo[1]);
@@ -27,7 +29,7 @@ public class LineConverter {
     }
   }
 
-  public static Subtask convertLineToSubtask(String line, DateTimeFormatter formatter) {
+  public static Subtask convertLineToSubtask(String line) {
     String[] subtaskInfo = line.split(",");
     int taskId = Integer.parseInt(subtaskInfo[0]);
     TaskType taskType = TaskType.valueOf(subtaskInfo[1]);
@@ -47,7 +49,7 @@ public class LineConverter {
     }
   }
 
-  public static Epic convertLineToEpic(String line, DateTimeFormatter formatter) {
+  public static Epic convertLineToEpic(String line) {
     String[] epicInfo = line.split(",");
     int taskId = Integer.parseInt(epicInfo[0]);
     TaskType taskType = TaskType.valueOf(epicInfo[1]);
@@ -64,5 +66,4 @@ public class LineConverter {
           endTime);
     }
   }
-
 }

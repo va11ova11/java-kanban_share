@@ -1,5 +1,3 @@
-package tests;
-
 
 import exception.ManagerSaveException;
 import java.io.File;
