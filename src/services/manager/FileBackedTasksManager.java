@@ -12,7 +12,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.List;
 import models.business.Epic;
 import models.business.Subtask;
 import models.business.Task;
@@ -105,7 +104,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
       while (bf.ready()) {
         String line = bf.readLine();
 
-        if (!line.isEmpty()) {
+        if (line != null) {
           if (line.contains("SUBTASK")) {
             Subtask subtask = convertLineToSubtask(line);
             fileBackedTasksManager.addSubtaskInMap(subtask);
@@ -172,8 +171,8 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
         LocalDateTime.of(2022, 12, 14, 20, 0), 120);
     fileBackedTasksManager1.createTask(task4);
 
-    fileBackedTasksManager1.getTaskById(taskId1);
-    fileBackedTasksManager1.getEpicById(epicId1);
+     fileBackedTasksManager1.getTaskById(taskId1);
+//    fileBackedTasksManager1.getEpicById(epicId1);
 
     Printer.printAllTaskAndHistory(fileBackedTasksManager1);
 

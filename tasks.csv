@@ -1,6 +1,6 @@
 id,type,name,status,description,startTime,endTime,epicId
-1,TASK,TaskTime,NEW,Task has time,10.01.2022;10:00,10.01.2022;11:00
-2,EPIC,Task1,NEW,Task1_desc,10.01.2022;07:00,10.01.2022;14:00
-3,SUBTASK,TaskTime,NEW,Task has time,10.01.2022;07:00,10.01.2022;08:00,2
-4,SUBTASK,TaskTime,NEW,Task has time,10.01.2022;13:00,10.01.2022;14:00,2
+4,TASK,First_Task,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00
+5,TASK,SameTimeTask,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00
+6,TASK,First_Task,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00
+7,TASK,SameTimeTask,NEW,FirstTask_description,15.12.2022;10:00,15.12.2022;11:00
 

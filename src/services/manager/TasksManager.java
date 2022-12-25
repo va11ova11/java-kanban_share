@@ -6,7 +6,6 @@ import models.business.Task;
 
 import java.util.HashMap;
 import java.util.List;
-import services.manager.history.HistoryManager;
 
 public interface TasksManager {
     Set<Task> getPrioritizedTasks();

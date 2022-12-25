@@ -1,3 +1,4 @@
+package funcTests;
 
 import exception.ManagerSaveException;
 import java.io.File;
@@ -5,7 +6,6 @@ import java.util.List;
 import models.business.Task;
 import models.business.Util.Managers;
 import models.business.enums.TaskStatus;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import services.manager.FileBackedTasksManager;
 import static org.junit.jupiter.api.Assertions.*;
