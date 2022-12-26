@@ -17,23 +17,22 @@ import services.manager.FileBackedTasksManager;
 public class EpicHandler {
 
   private final FileBackedTasksManager manager;
-  private final Gson gson;
-  private final ResponseWriter responseWriter;
+  private final Gson gsonForGetEpic;
 
-  public EpicHandler(FileBackedTasksManager manager, Gson gson, ResponseWriter responseWriter) {
-    this.responseWriter = responseWriter;
+
+  public EpicHandler(FileBackedTasksManager manager, Gson gsonForGetEpic) {
     this.manager = manager;
-    this.gson = gson;
+    this.gsonForGetEpic = gsonForGetEpic;
   }
 
   public void deleteEpics(HttpExchange exchange) throws IOException {
     manager.deleteAllEpic();
     String response = "Все эпики удалены";
-    responseWriter.writeResponse(exchange, response, 200);
+    ResponseWriter.writeResponse(exchange, response, 200);
   }
 
   public void getEpics(HttpExchange exchange) throws IOException {
-    responseWriter.writeResponse(exchange, gson.toJson(manager.getEpics()), 200);
+    ResponseWriter.writeResponse(exchange, gsonForGetEpic.toJson(manager.getEpics()), 200);
   }
 
   public void postEpic(HttpExchange exchange) throws IOException {
@@ -41,22 +40,18 @@ public class EpicHandler {
     InputStream is = exchange.getRequestBody();
     if (is == null || !headers.get("Content-Type").contains("application/json")) {
       String response = "Формат должен данных быть - JSON";
-      responseWriter.writeResponse(exchange, response, 400);
+      ResponseWriter.writeResponse(exchange, response, 400);
       return;
     }
     String requestString = new String(is.readAllBytes(), DEFAULT_CHARSET);
     try {
-      Epic epic = gson.fromJson(requestString, Epic.class);
-      try {
-        manager.addEpicInMap(epic);
-      } catch (RuntimeException ex) {
-        ResponseWriter.writeResponse(exchange, ex.getMessage(), 404);
-      }
+      Epic epic = gsonForGetEpic.fromJson(requestString, Epic.class);
+      manager.createEpic(epic);
       String response = "Задача " + epic.getName() + " создана";
-      responseWriter.writeResponse(exchange, response, 200);
+      ResponseWriter.writeResponse(exchange, response, 200);
     } catch (JsonSyntaxException ex) {
       String response = "Не верный формат JSON";
-      responseWriter.writeResponse(exchange, response, 400);
+      ResponseWriter.writeResponse(exchange, response, 400);
     }
   }
 
@@ -72,9 +67,9 @@ public class EpicHandler {
     }
     try {
       Epic epic = manager.getEpicById(id);
-      responseWriter.writeResponse(exchange, gson.toJson(epic), 200);
+      ResponseWriter.writeResponse(exchange, gsonForGetEpic.toJson(epic), 200);
     } catch (NullPointerException ex) {
-      responseWriter.writeResponse(exchange, ex.getMessage(), 404);
+      ResponseWriter.writeResponse(exchange, ex.getMessage(), 404);
     }
   }
 
@@ -85,16 +80,16 @@ public class EpicHandler {
       id = Integer.parseInt(query.split("=")[1]);
     } catch (NumberFormatException ex) {
       String response = "некорректный id";
-      responseWriter.writeResponse(exchange, response, 400);
+      ResponseWriter.writeResponse(exchange, response, 400);
       return;
     }
 
     try {
       Epic epic = manager.getEpicById(id);
       List<Subtask> subtasksInEpic = manager.getSubtasksInEpic(epic);
-      responseWriter.writeResponse(exchange, gson.toJson(subtasksInEpic), 200);
+      ResponseWriter.writeResponse(exchange, gsonForGetEpic.toJson(subtasksInEpic), 200);
     } catch (NullPointerException ex) {
-      responseWriter.writeResponse(exchange, ex.getMessage(), 404);
+      ResponseWriter.writeResponse(exchange, ex.getMessage(), 404);
     }
   }
 
@@ -103,26 +98,26 @@ public class EpicHandler {
     InputStream is = exchange.getRequestBody();
     if (is == null || !headers.get("Content-Type").contains("application/json")) {
       String response = "Формат должен данных быть - JSON";
-      responseWriter.writeResponse(exchange, response, 400);
+      ResponseWriter.writeResponse(exchange, response, 400);
       return;
     }
 
     String requestString = new String(is.readAllBytes(), DEFAULT_CHARSET);
     final Epic epic;
     try {
-      epic = gson.fromJson(requestString, Epic.class);
+      epic = gsonForGetEpic.fromJson(requestString, Epic.class);
     } catch (JsonSyntaxException ex) {
       String response = "Не верный формат JSON";
-      responseWriter.writeResponse(exchange, response, 400);
+      ResponseWriter.writeResponse(exchange, response, 400);
       return;
     }
 
     try {
       manager.deleteAllSubTasksInEpic(epic);
       String response = "Все задачи у эпика: " + epic.getName() + " удалены";
-      responseWriter.writeResponse(exchange, response, 200);
+      ResponseWriter.writeResponse(exchange, response, 200);
     } catch (NullPointerException ex) {
-      responseWriter.writeResponse(exchange, ex.getMessage(), 404);
+      ResponseWriter.writeResponse(exchange, ex.getMessage(), 404);
     }
   }
 }

@@ -16,10 +16,9 @@ public class SubtaskHandler {
 
   private final FileBackedTasksManager manager;
   private final Gson gson;
-  private final ResponseWriter responseWriter;
 
-  public SubtaskHandler(Gson gson, FileBackedTasksManager manager, ResponseWriter responseWriter) {
-    this.responseWriter = responseWriter;
+
+  public SubtaskHandler(Gson gson, FileBackedTasksManager manager) {
     this.manager = manager;
     this.gson = gson;
   }
@@ -41,7 +40,7 @@ public class SubtaskHandler {
     try {
       Subtask subtask = gson.fromJson(requestString, Subtask.class);
       try {
-        manager.addSubtaskInMap(subtask);
+        manager.createSubTask(subtask);
       } catch (RuntimeException ex) {
         ResponseWriter.writeResponse(exchange, ex.getMessage(), 404);
       }

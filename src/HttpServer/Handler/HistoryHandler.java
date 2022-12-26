@@ -10,28 +10,26 @@ public class HistoryHandler {
 
   private final Gson gson;
   private final FileBackedTasksManager manager;
-  private final ResponseWriter responseWriter;
 
-  public HistoryHandler (Gson gson, FileBackedTasksManager manager, ResponseWriter responseWriter) {
+  public HistoryHandler (Gson gson, FileBackedTasksManager manager) {
     this.gson = gson;
     this.manager = manager;
-    this.responseWriter = responseWriter;
   }
 
 
   public void getPrioritizedTask(HttpExchange exchange) throws IOException {
-    if(manager.getPrioritizedTasks().isEmpty()) {
+    if(manager.getPrioritizedTasks() == null | manager.getPrioritizedTasks().isEmpty()) {
       String response = "Список задач по приоритету пуст";
-      responseWriter.writeResponse(exchange, response, 404);
+      ResponseWriter.writeResponse(exchange, response, 404);
     }
-    responseWriter.writeResponse(exchange, gson.toJson(manager.getPrioritizedTasks()), 200);
+    ResponseWriter.writeResponse(exchange, gson.toJson(manager.getPrioritizedTasks()), 200);
   }
 
   public void getHistory(HttpExchange exchange) throws IOException {
-    if(manager.getHistory().isEmpty()) {
+    if(manager.getHistory() == null) {
       String response = "История просмотренных задач пуста";
-      responseWriter.writeResponse(exchange, response, 404);
+      ResponseWriter.writeResponse(exchange, response, 404);
     }
-    responseWriter.writeResponse(exchange, gson.toJson(manager.getHistory()), 200);
+    ResponseWriter.writeResponse(exchange, gson.toJson(manager.getHistory()), 200);
   }
 }

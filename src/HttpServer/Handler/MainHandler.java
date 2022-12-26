@@ -21,15 +21,14 @@ public class MainHandler implements HttpHandler {
 
 
   public MainHandler(FileBackedTasksManager manager) {
-    ResponseWriter responseWriter = new ResponseWriter();
     Gson gson = new GsonBuilder()
         .setPrettyPrinting()
         .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
         .create();
     taskHandler = new TaskHandler(manager, gson);
-    subtaskHandler = new SubtaskHandler(gson, manager, responseWriter);
-    epicHandler = new EpicHandler(manager, gson, responseWriter);
-    historyHandler = new HistoryHandler(gson, manager, responseWriter);
+    subtaskHandler = new SubtaskHandler(gson, manager);
+    epicHandler = new EpicHandler(manager, gson);
+    historyHandler = new HistoryHandler(gson, manager);
   }
   @Override
   public void handle(HttpExchange exchange) throws IOException {
@@ -147,7 +146,7 @@ public class MainHandler implements HttpHandler {
     return Endpoint.UNKNOWN;
   }
   private Endpoint getEndpointForEpic(String requestMethod, String[] path) {
-    if(path.length > 3 && path[3].equals("subtasks")){
+    if(path.length > 3  && path[3].equals("subtasks")){
       return Endpoint.DELETE_SUBTASKS_IN_EPIC;
     }
     if (requestMethod.equals("GET")) {
@@ -176,6 +175,9 @@ public class MainHandler implements HttpHandler {
     if(uri.getQuery() != null){
       return getEndpointForDeleteAndGetById(path, requestMethod);
     }
+    if(path[1].equals("tasks") && requestMethod.equals("GET")) {
+      return Endpoint.GET_PRIORITIZED_TASK;
+    }
     if (path[2].equals("task")) {
       return getEndpointForTask(requestMethod);
     }
@@ -185,12 +187,10 @@ public class MainHandler implements HttpHandler {
     if (path[2].equals("subtask")) {
       return getEndpointForSubtask(requestMethod);
     }
-    if(path[1].equals("tasks") && requestMethod.equals("GET")) {
-      return Endpoint.GET_PRIORITIZED_TASK;
-    }
     if(path[2].equals("history") && requestMethod.equals("GET")) {
       return Endpoint.GET_HISTORY;
     }
+
     return Endpoint.UNKNOWN;
   }
 }

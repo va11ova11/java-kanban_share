@@ -15,6 +15,7 @@ import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
 import models.business.Task;
 import models.business.enums.TaskStatus;
+
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -38,8 +39,6 @@ public class TaskHandlerTest {
   public void shouldRequestBodyNotEmptyAndContentTypeEqualsJson() throws IOException, InterruptedException {
     Task task1 = new Task("First_Task", "FirstTask_description", TaskStatus.NEW,
         LocalDateTime.of(2022, 12, 14, 10, 0), 60);
-
-    URI url = URI.create("http://localhost:8080/tasks/task/");
 
     String json = gson.toJson(task1);
     final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
@@ -115,10 +114,7 @@ public class TaskHandlerTest {
   @Test
   public void shouldGetTaskByIdIfTaskExistsAndIdIsCorrect() throws IOException, InterruptedException {
     createTwoTask();
-    HttpRequest request1 = HttpRequest.newBuilder().uri(url).GET().build();
-    HttpResponse<String> response1 = client.send(request1, HttpResponse.BodyHandlers.ofString());
 
-    HttpClient client = HttpClient.newHttpClient();
     URI url = URI.create("http://localhost:8080/tasks/task/?id=3");
     HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
     HttpResponse<String> response2 = client.send(request, HttpResponse.BodyHandlers.ofString());
