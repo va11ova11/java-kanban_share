@@ -52,6 +52,9 @@ public class Epic extends Task {
     }
 
     public void addSubTaskInEpicList(int subTaskId) {
+        if(subtasksId == null) {
+            this.subtasksId = new ArrayList<>();
+        }
         subtasksId.add(subTaskId);
     }
 
