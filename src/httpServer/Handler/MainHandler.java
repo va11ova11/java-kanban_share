@@ -25,6 +25,8 @@ public class MainHandler implements HttpHandler {
         .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
         .create();
     Gson gsonForEpic = new GsonBuilder()
+        .serializeNulls()
+        .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
         .setPrettyPrinting()
         .create();
     taskHandler = new TaskHandler(manager, gson);

@@ -8,7 +8,6 @@ public class Main {
       KVServer server = Managers.getDefaultKVServer();
       server.start();
 
-
       HttpTaskServer httpTaskServer = new HttpTaskServer();
       httpTaskServer.start();
     }
