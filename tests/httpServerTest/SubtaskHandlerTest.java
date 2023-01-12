@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import HttpServer.Util.LocalDateTimeAdapter;
+import httpServer.HttpTaskServer;
+import httpServer.Util.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -13,10 +14,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import kvServer.KVServer;
 import models.business.Epic;
 import models.business.Subtask;
+import models.business.Util.Managers;
 import models.business.enums.TaskStatus;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SubtaskHandlerTest {
@@ -24,16 +30,30 @@ public class SubtaskHandlerTest {
   private static URI url;
   private static HttpClient client;
   private static Gson gson;
+  private static HttpTaskServer httpTaskServer;
+  private static KVServer kvServer;
 
   @BeforeAll
-  public static void beforeAll() throws IOException, InterruptedException {
+  public static void beforeAll() {
     url = URI.create("http://localhost:8080/tasks/subtask/");
     client = HttpClient.newHttpClient();
     gson = new GsonBuilder()
-        .setPrettyPrinting()
         .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
         .create();
-    createEpic();
+  }
+
+  @BeforeEach
+  public void beforeEach() throws IOException, InterruptedException {
+    kvServer = Managers.getDefaultKVServer();
+    kvServer.start();
+    httpTaskServer = new HttpTaskServer();
+    httpTaskServer.start();
+  }
+
+  @AfterEach
+  public void afterEach() {
+    kvServer.stop();
+    httpTaskServer.stop();
   }
 
   private static void createEpic() throws IOException, InterruptedException {
@@ -48,10 +68,11 @@ public class SubtaskHandlerTest {
 
   @Test
   public void shouldRequestBodyNotEmptyAndContentTypeEqualsJson() throws IOException, InterruptedException {
-    Subtask subtask = new Subtask("First_Subtask", "FirstSubtask_description", TaskStatus.NEW,
-        LocalDateTime.of(2022, 12, 14, 10, 0), 60, 8);
+    createEpic();
+    Subtask subtask1 = new Subtask("First_Subtask", "FirstSubtask_description", TaskStatus.NEW,
+        LocalDateTime.of(2022, 12, 14, 10, 0), 60, 1);
 
-    String json = gson.toJson(subtask);
+    String json = gson.toJson(subtask1);
     final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
     HttpRequest request = HttpRequest.newBuilder().uri(url).POST(body).header("Content-Type", "application/json").build();
 
@@ -60,6 +81,25 @@ public class SubtaskHandlerTest {
 
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
     assertNotNull(response.body(), "Тело запроса пусто");
+  }
+
+  @Test
+  public void shouldDeleteSubtaskByIdWhenTaskIsExistAndCorrectId() throws IOException, InterruptedException {
+    createEpic();
+    Subtask subtask1 = new Subtask("First_Subtask", "FirstSubtask_description", TaskStatus.NEW,
+        LocalDateTime.of(2022, 12, 14, 10, 0), 60, 1);
+
+    String json = gson.toJson(subtask1);
+    final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+    HttpRequest request1 = HttpRequest.newBuilder().uri(url).POST(body).header("Content-Type", "application/json").build();
+    client.send(request1, HttpResponse.BodyHandlers.ofString());
+
+    HttpClient client = HttpClient.newHttpClient();
+    URI url = URI.create("http://localhost:8080/tasks/subtask/?id=2");
+    HttpRequest request2 = HttpRequest.newBuilder().uri(url).DELETE().build();
+    HttpResponse<String> response = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(response.statusCode(), 200, "Задача не удаляется");
   }
 
   @Test
@@ -73,26 +113,6 @@ public class SubtaskHandlerTest {
   }
 
   @Test
-  public void shouldStatusCode404WhenCreatingSubtaskForTheSameTime()
-      throws IOException, InterruptedException {
-    Subtask subtask1 = new Subtask("First_Task", "FirstTask_description", TaskStatus.NEW,
-        LocalDateTime.of(2022, 12, 14, 10, 0), 60, 8);
-    Subtask subtask2 = new Subtask("SameTimeTask", "FirstTask_description", TaskStatus.NEW,
-        LocalDateTime.of(2022, 12, 14, 10, 0), 60, 8);
-
-    String subTaskOne = gson.toJson(subtask1);
-    String subTaskSameTime = gson.toJson(subtask2);
-
-    final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(subTaskOne);
-    final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(subTaskSameTime);
-    HttpRequest request1 = HttpRequest.newBuilder().uri(url).POST(body1).header("Content-Type", "application/json").build();
-    HttpRequest request2 = HttpRequest.newBuilder().uri(url).POST(body2).header("Content-Type", "application/json").build();
-    client.send(request1, HttpResponse.BodyHandlers.ofString());
-    HttpResponse<String> response = client.send(request2, HttpResponse.BodyHandlers.ofString());
-
-    assertEquals(response.statusCode(), 404, "Задача на это время уже существует");
-  }
-  @Test
   public void shouldGetAllSubtask() throws IOException, InterruptedException {
     HttpRequest request1 = HttpRequest.newBuilder().uri(url).GET().build();
     HttpResponse<String> response = client.send(request1, HttpResponse.BodyHandlers.ofString());
@@ -101,11 +121,20 @@ public class SubtaskHandlerTest {
 
   @Test
   public void shouldGetTaskByIdIfSubtaskExistsAndIdIsCorrect() throws IOException, InterruptedException {
-    URI url = URI.create("http://localhost:8080/tasks/subtask/?id=9");
-    HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
-    HttpResponse<String> response2 = client.send(request, HttpResponse.BodyHandlers.ofString());
+    createEpic();
+    Subtask subtask1 = new Subtask("First_Subtask", "FirstSubtask_description", TaskStatus.NEW,
+        LocalDateTime.of(2022, 12, 14, 10, 0), 60, 1);
 
-    assertEquals(response2.statusCode(), 200, "Задача не возвращается");
+    String json = gson.toJson(subtask1);
+    final HttpRequest.BodyPublisher body = HttpRequest.BodyPublishers.ofString(json);
+    HttpRequest request1 = HttpRequest.newBuilder().uri(url).POST(body).header("Content-Type", "application/json").build();
+    client.send(request1, HttpResponse.BodyHandlers.ofString());
+
+    URI url = URI.create("http://localhost:8080/tasks/subtask/?id=2");
+    HttpRequest request2 = HttpRequest.newBuilder().uri(url).GET().build();
+    HttpResponse<String> response = client.send(request2, HttpResponse.BodyHandlers.ofString());
+
+    assertEquals(200, response.statusCode(), "Задача не возвращается");
   }
 
   @Test

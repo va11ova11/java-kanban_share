@@ -74,8 +74,10 @@ public class Task {
         }
     }
 
-    public void setStartTime(LocalDateTime startTime) {
-        this.startTime = startTime;
+    public void setStartTime(LocalDateTime startTimee) {
+        if(startTime == null) {
+        }
+        this.startTime = LocalDateTime.from(startTimee);
     }
 
 

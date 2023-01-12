@@ -10,7 +10,7 @@ public class Printer {
   public static void printPrioritizedTask(TasksManager tasksManager) {
     System.out.println("Задачи отсортированные по времени");
     int counter = 0;
-    for(Task task :tasksManager.getPrioritizedTasks()) {
+    for(Task task : tasksManager.getPrioritizedTasks()) {
       System.out.println(++counter + ". - " + task.toString());
     }
   }
@@ -54,5 +54,4 @@ public class Printer {
       System.out.println("История задач пуста.");
     }
   }
-
 }

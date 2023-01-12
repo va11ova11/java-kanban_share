@@ -1,6 +1,5 @@
 package services.manager.history;
 
-import java.util.function.Function;
 import models.business.Epic;
 import models.business.Task;
 import java.util.*;
@@ -117,17 +116,16 @@ public class InMemoryHistoryManager implements HistoryManager {
   }
 
   @Override
-  public String historyToString() {
+  public List<String> getHistoryToString() {
     List<Task> history = customLinkedList.getHistory();
     if (history == null) {
-      return "";
+      return null;
     }
-    StringBuilder idTaskFromHistory = new StringBuilder();
-    for (Task task : history) {
-      idTaskFromHistory.append(task.getId());
-      idTaskFromHistory.append(",");
+    List<String> historyIds = new ArrayList<>();
+    for(Task task : history) {
+      historyIds.add(String.valueOf(task.getId()));
     }
-    return idTaskFromHistory.toString();
+    return historyIds;
   }
 
   @Override
@@ -155,7 +153,7 @@ public class InMemoryHistoryManager implements HistoryManager {
     }
     if (customLinkedList.historyMap.get(id).data.getType() == TaskType.EPIC) {
       Epic epic = (Epic) customLinkedList.historyMap.get(id).data;
-      for (Integer subTaskId : epic.getSubTasksId()) {
+      for (Integer subTaskId : epic.getSubtasksId()) {
         if (customLinkedList.historyMap.containsKey(subTaskId)) {
           customLinkedList.removeNode(customLinkedList.historyMap.get(subTaskId));
         }

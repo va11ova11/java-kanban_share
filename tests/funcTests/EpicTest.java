@@ -18,7 +18,7 @@ public class EpicTest {
 
   @BeforeAll
   public static void beforeAll() {
-    tasksManager = Managers.getDefault();
+    tasksManager = Managers.getTaskManager();
   }
   @BeforeEach
   public void deleteEpic(){

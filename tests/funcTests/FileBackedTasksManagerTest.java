@@ -52,7 +52,7 @@ public class FileBackedTasksManagerTest extends TaskManagerTest<FileBackedTasksM
 
   @Test
   public void shouldLoadFromFile() {
-    FileBackedTasksManager f = FileBackedTasksManager.loadFromFile(new File("tasks.csv"));
+    FileBackedTasksManager f = FileBackedTasksManager.load(new File("tasks.csv"));
     assertNotNull(f, "FileBackedTasksManager не загружается с файла");
   }
 }

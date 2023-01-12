@@ -11,24 +11,28 @@ public class EpicUpdater {
 
   public Epic updateEpicOnSubtaskOperation(Subtask subtask, Epic updateEpic,
       Map<Integer, Subtask> subtasks) {
-    updateEpicDuration(subtask, updateEpic);
     checkEpicStatus(updateEpic, subtasks);
-    //Если задача без времени
+    //Если задача с временем
     if(subtask.getStartTime() != null) {
       updateEpicStartTime(subtask, updateEpic, subtasks);
       updateEpicEndTime(subtask, updateEpic, subtasks);
+      updateEpicDuration(updateEpic, subtasks);
     }
     return updateEpic;
   }
 
-  private void updateEpicDuration(Subtask subtask, Epic updateEpic) {
-    long epicDuration = updateEpic.getDuration();
-    long subtaskDuration  = subtask.getDuration();
-    updateEpic.setDuration(epicDuration + subtaskDuration);
+  private void updateEpicDuration(Epic updateEpic, Map<Integer, Subtask> subtasks) {
+    List<Integer> subtasksId = updateEpic.getSubtasksId();
+    long epicDuration = 0;
+    for(int id : subtasksId) {
+      Subtask s = subtasks.get(id);
+      epicDuration += s.getDuration();
+    }
+    updateEpic.setDuration(epicDuration);
   }
 
   private void updateEpicStartTime(Subtask subtask, Epic updateEpic, Map<Integer, Subtask> subtasks) {
-    List<Integer> idSubtasksInEpic = updateEpic.getSubTasksId();
+    List<Integer> idSubtasksInEpic = updateEpic.getSubtasksId();
     LocalDateTime epicStartTime = subtask.getStartTime();
     for(int subtaskId : idSubtasksInEpic) {
       Subtask s = subtasks.get(subtaskId);
@@ -43,7 +47,7 @@ public class EpicUpdater {
     if(subtask.getStartTime() == null) {
       return;
     }
-    List<Integer> idSubtasksInEpic = updateEpic.getSubTasksId();
+    List<Integer> idSubtasksInEpic = updateEpic.getSubtasksId();
     LocalDateTime epicEndTime = subtask.getEndTime();
     for(int subtaskId : idSubtasksInEpic) {
       Subtask s = subtasks.get(subtaskId);
@@ -57,18 +61,18 @@ public class EpicUpdater {
   public void checkEpicStatus(Epic updateEpic, Map<Integer, Subtask> subtasks) {
     int newCount = 0;
     int doneCount = 0;
-    for (int subTaskIdInEpic : updateEpic.getSubTasksId()) {
-      if (subtasks.get(subTaskIdInEpic).getStatus() == TaskStatus.NEW) {
-        newCount++;
-      } else if (subtasks.get(subTaskIdInEpic).getStatus() == TaskStatus.DONE) {
-        doneCount++;
-      }
+    for (int subTaskIdInEpic : updateEpic.getSubtasksId()) {
+        if (subtasks.get(subTaskIdInEpic).getStatus() == TaskStatus.NEW) {
+          newCount++;
+        } else if (subtasks.get(subTaskIdInEpic).getStatus() == TaskStatus.DONE) {
+          doneCount++;
+        }
     }
     updateEpicStatus(newCount, doneCount, updateEpic);
   }
 
   private void updateEpicStatus(int newCount, int doneCount, Epic updateEpic) {
-    if (updateEpic.getSubTasksId().isEmpty() || updateEpic.getSubTasksSize() == newCount) {
+    if (updateEpic.getSubtasksId().isEmpty() || updateEpic.getSubTasksSize() == newCount) {
       updateEpic.setStatus(TaskStatus.NEW);
     } else if (updateEpic.getSubTasksSize() == doneCount) {
       updateEpic.setStatus(TaskStatus.DONE);

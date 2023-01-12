@@ -19,7 +19,7 @@ import models.business.Util.Managers;
 import models.business.Util.Printer;
 import models.business.enums.TaskStatus;
 
-public class FileBackedTasksManager extends InMemoryTasksManager implements TasksManager {
+public class FileBackedTasksManager extends InMemoryTasksManager {
 
   public FileBackedTasksManager() {
   }
@@ -59,7 +59,7 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
   }
 
   @Override
-  public Epic getEpicById(int id) {
+  public Epic getEpicById(int id)  {
     Epic epic = super.getEpicById(id);
     save();
     return epic;
@@ -90,14 +90,16 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
       }
 
       writer.write("\n");
-      writer.write(historyManager.historyToString());
+      if(historyManager.getHistoryToString() != null) {
+        writer.write(historyManager.getHistoryToString().toString());
+      }
     } catch (IOException e) {
       throw new ManagerSaveException("Ошибка записи в файл");
     }
   }
 
 
-  public static FileBackedTasksManager loadFromFile(File file) {
+  public static FileBackedTasksManager load(File file) {
     FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager();
     try (BufferedReader bf = new BufferedReader(new FileReader(file))) {
       bf.readLine();
@@ -133,7 +135,6 @@ public class FileBackedTasksManager extends InMemoryTasksManager implements Task
 
   private void addTaskIdInHistory(String historyLine) {
     String[] stringHistoryId = historyLine.split(",");
-    //Это норм выглядит или лучше циклом?
     int[] historyIds = Arrays.stream(stringHistoryId).mapToInt(Integer::valueOf).toArray();
       for (int id : historyIds) {
         if (tasks.containsKey(id)) {

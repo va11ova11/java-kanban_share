@@ -1,4 +1,4 @@
-package HttpServer.Util;
+package httpServer.Util;
 
 import static jdk.internal.util.xml.XMLStreamWriter.DEFAULT_CHARSET;
 

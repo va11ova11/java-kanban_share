@@ -51,15 +51,18 @@ public class InMemoryTasksManager implements TasksManager {
     return taskId;
   }
 
-  public void checkTheTaskCompletionTime(Task task) {
+  private void checkTheTaskCompletionTime(Task task) throws RuntimeException {
     if (prioritizedTask.size() == 0 || task.getStartTime() == null) {
       prioritizedTask.add(task);
     } else {
       for (Task t : prioritizedTask) {
         boolean equalsStartTime = t.getStartTime().equals(task.getStartTime());
-        boolean notCorrectEndTime = task.getEndTime().isAfter(t.getStartTime()) && task.getEndTime().isBefore(t.getEndTime());
-        boolean notCorrectStartTime = task.getStartTime().isAfter(t.getStartTime()) && task.getStartTime().isBefore(t.getEndTime());
-        if ( equalsStartTime || notCorrectEndTime || notCorrectStartTime ){
+        boolean notCorrectEndTime = task.getEndTime().isAfter(t.getStartTime()) && task.getEndTime()
+            .isBefore(t.getEndTime());
+        boolean notCorrectStartTime =
+            task.getStartTime().isAfter(t.getStartTime()) && task.getStartTime()
+                .isBefore(t.getEndTime());
+        if (equalsStartTime || notCorrectEndTime || notCorrectStartTime) {
           throw new RuntimeException("Задача на это время уже существует");
         }
       }
@@ -77,16 +80,16 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public int createSubTask(Subtask subtask) {
+  public int createSubTask(Subtask subtask) throws RuntimeException {
     if (epics.containsKey(subtask.getEpicId())) {
       final int subtaskId = ++id;
       subtask.setId(subtaskId);
+      checkTheTaskCompletionTime(subtask);
       subtasks.put(subtaskId, subtask);
 
       final Epic updateEpic = epics.get(subtask.getEpicId());
       updateEpic.addSubTaskInEpicList(subtaskId);
       epicUpdater.checkEpicStatus(updateEpic, subtasks);
-      checkTheTaskCompletionTime(subtask);
       Epic newEpic = epicUpdater.updateEpicOnSubtaskOperation(subtask, updateEpic, subtasks);
       updateEpic(newEpic);
       return subtaskId;
@@ -95,7 +98,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public Task getTaskById(int id) {
+  public Task getTaskById(int id) throws NullPointerException {
     if (tasks.containsKey(id)) {
       historyManager.add(tasks.get(id));
       return tasks.get(id);
@@ -104,7 +107,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public Epic getEpicById(int epicId) {
+  public Epic getEpicById(int epicId) throws NullPointerException {
     if (epics.containsKey(epicId)) {
       historyManager.add(epics.get(epicId));
       return epics.get(epicId);
@@ -113,7 +116,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public Subtask getSubTaskById(int subTaskId) {
+  public Subtask getSubTaskById(int subTaskId) throws NullPointerException {
     if (subtasks.containsKey(subTaskId)) {
       historyManager.add(subtasks.get(subTaskId));
       return subtasks.get(subTaskId);
@@ -127,7 +130,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public void deleteTaskById(int id) {
+  public void deleteTaskById(int id) throws NullPointerException {
     //Удалить задачу из истории если она там есть
     if (historyManager.getHistoryMap().containsKey(id)) {
       historyManager.remove(id);
@@ -144,7 +147,7 @@ public class InMemoryTasksManager implements TasksManager {
       Epic newEpic = epicUpdater.updateEpicOnSubtaskOperation(deleteSubtask, updateEpic, subtasks);
       updateEpic(newEpic);
     } else if (epics.containsKey(id)) {
-      for (int subTasksId : epics.get(id).getSubTasksId()) {
+      for (int subTasksId : epics.get(id).getSubtasksId()) {
         prioritizedTask.remove(subtasks.get(subTasksId));
         subtasks.remove(subTasksId);
       }
@@ -155,7 +158,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public void updateTask(Task task) {
+  public void updateTask(Task task) throws NullPointerException {
     if (tasks.containsKey(task.getId())) {
       prioritizedTask.removeIf(t -> t.getId() == task.getId());
       checkTheTaskCompletionTime(task);
@@ -166,7 +169,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public void updateSubTask(Subtask subTask) {
+  public void updateSubTask(Subtask subTask) throws NullPointerException {
     if (subtasks.containsKey(subTask.getId())) {
       prioritizedTask.removeIf(t -> t.getId() == subTask.getId());
       checkTheTaskCompletionTime(subTask);
@@ -180,7 +183,7 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public void updateEpic(Epic epic) {
+  public void updateEpic(Epic epic) throws NullPointerException {
     if (epics.containsKey(epic.getId())) {
       epics.put(epic.getId(), epic);
     } else {
@@ -234,9 +237,9 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public void deleteAllSubTasksInEpic(Epic epic) {
+  public void deleteAllSubTasksInEpic(Epic epic) throws NullPointerException {
     if (epics.containsKey(epic.getId())) {
-      List<Integer> subtasksInEpic = epic.getSubTasksId();
+      List<Integer> subtasksInEpic = epic.getSubtasksId();
       prioritizedTask.removeIf(subtasks::containsValue);
       if (subtasksInEpic != null) {
         for (int id : subtasksInEpic) {
@@ -250,9 +253,9 @@ public class InMemoryTasksManager implements TasksManager {
   }
 
   @Override
-  public List<Subtask> getSubtasksInEpic(Epic epic) {
+  public List<Subtask> getSubtasksInEpic(Epic epic) throws NullPointerException {
     if (epics.containsKey(epic.getId())) {
-      final List<Integer> subtasksId = epic.getSubTasksId();
+      final List<Integer> subtasksId = epic.getSubtasksId();
       final List<Subtask> subtasksInEpic = new ArrayList<>();
       if (subtasksId != null) {
         for (int subTaskId : subtasksId) {

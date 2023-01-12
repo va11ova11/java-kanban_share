@@ -1,17 +1,17 @@
-package HttpServer.Handler;
+package httpServer.Handler;
 
-import HttpServer.Util.ResponseWriter;
+import httpServer.Util.ResponseWriter;
 import com.google.gson.Gson;
 import com.sun.net.httpserver.HttpExchange;
 import java.io.IOException;
-import services.manager.FileBackedTasksManager;
+import services.manager.TasksManager;
 
 public class HistoryHandler {
 
   private final Gson gson;
-  private final FileBackedTasksManager manager;
+  private final TasksManager manager;
 
-  public HistoryHandler (Gson gson, FileBackedTasksManager manager) {
+  public HistoryHandler (Gson gson, TasksManager manager) {
     this.gson = gson;
     this.manager = manager;
   }

@@ -1,12 +1,2 @@
 id,type,name,status,description,startTime,endTime,epicId
-4,TASK,First_Task,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00
-5,TASK,SameTimeTask,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00
-6,TASK,First_Task,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00
-7,TASK,SameTimeTask,NEW,FirstTask_description,15.12.2022;10:00,15.12.2022;11:00
-8,EPIC,Epic1,NEW,Epic1_desc,14.12.2022;10:00,14.12.2022;11:00
-12,EPIC,Epic,NEW,Epic_desc
-9,SUBTASK,First_Task,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00,8
-10,SUBTASK,SameTimeTask,NEW,FirstTask_description,14.12.2022;10:00,14.12.2022;11:00,8
-11,SUBTASK,First_Subtask,NEW,FirstSubtask_description,14.12.2022;10:00,14.12.2022;11:00,8
 
-9,8,

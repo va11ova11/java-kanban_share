@@ -10,5 +10,5 @@ public interface HistoryManager {
     List<Task> getHistory();
     void remove(int id);
     Map<Integer, Node<Task>> getHistoryMap();
-    String historyToString();
+    List<String> getHistoryToString();
 }

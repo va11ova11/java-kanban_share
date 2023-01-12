@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private final ArrayList<Integer> subTasksId;
+    private ArrayList<Integer> subtasksId;
     private LocalDateTime endTime;
 
     @Override
@@ -31,39 +31,39 @@ public class Epic extends Task {
 
     public Epic(String epicName, String epicDescription) {
         super(epicName, epicDescription);
-        subTasksId = new ArrayList<>();
+        subtasksId = new ArrayList<>();
     }
 
     public Epic(int taskId, TaskType taskType, String taskName, String taskDescription,
         TaskStatus taskStatus, LocalDateTime startTime, long duration, LocalDateTime endTime) {
         super(taskId, taskType, taskName, taskDescription, taskStatus, startTime, duration);
-        subTasksId = new ArrayList<>();
+        subtasksId = new ArrayList<>();
         this.endTime = endTime;
     }
 
     public Epic(int taskId, TaskType taskType, String taskName, String taskDescription,
         TaskStatus taskStatus) {
         super(taskId, taskType, taskName, taskDescription, taskStatus);
-        subTasksId = new ArrayList<>();
+        subtasksId = new ArrayList<>();
     }
 
-    public ArrayList<Integer> getSubTasksId() {
-        return subTasksId;
+    public ArrayList<Integer> getSubtasksId() {
+        return subtasksId;
     }
 
     public void addSubTaskInEpicList(int subTaskId) {
-        subTasksId.add(subTaskId);
+        subtasksId.add(subTaskId);
     }
 
     public int getSubTasksSize() {
-        return subTasksId.size();
+        return subtasksId.size();
     }
 
     public void deleteSubTaskInEpic(int subTaskId) {
-        subTasksId.remove((Integer) subTaskId);
+        subtasksId.remove((Integer) subTaskId);
     }
     public void removeSubTasksIdInEpic() {
-        subTasksId.clear();
+        subtasksId.clear();
     }
 
     public String toString() {

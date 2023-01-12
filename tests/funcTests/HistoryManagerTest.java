@@ -25,7 +25,7 @@ public class HistoryManagerTest {
   @BeforeEach
   public void beforeEach() {
     historyManager = Managers.getDefaultHistory();
-    TasksManager taskManager = Managers.getDefault();
+    TasksManager taskManager = Managers.getTaskManager();
     task1 = new Task("Task1", "Task1_desc");
     task2 = new Task("Task2", "Task2_desc");
     task3 = new Task("Task3", "Task3_desc");

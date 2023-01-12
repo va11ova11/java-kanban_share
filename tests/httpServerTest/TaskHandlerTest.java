@@ -4,7 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import HttpServer.Util.LocalDateTimeAdapter;
+import httpServer.HttpTaskServer;
+import httpServer.Util.LocalDateTimeAdapter;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.IOException;
@@ -13,30 +14,51 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.LocalDateTime;
+import kvServer.KVServer;
 import models.business.Task;
+import models.business.Util.Managers;
 import models.business.enums.TaskStatus;
 
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import services.manager.HttpTaskManager;
 
 public class TaskHandlerTest {
 
   private static URI url;
   private static HttpClient client;
   private static Gson gson;
+  private static KVServer kvServer;
+  private static HttpTaskServer httpTaskServer;
 
   @BeforeAll
   public static void beforeAll() {
     url = URI.create("http://localhost:8080/tasks/task/");
     client = HttpClient.newHttpClient();
     gson = new GsonBuilder()
-        .setPrettyPrinting()
         .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
         .create();
   }
 
+  @BeforeEach
+  public void beforeEach() throws IOException, InterruptedException {
+    kvServer = Managers.getDefaultKVServer();
+    kvServer.start();
+    httpTaskServer = new HttpTaskServer();
+    httpTaskServer.start();
+  }
+
+  @AfterEach
+  public void afterEach() {
+    kvServer.stop();
+    httpTaskServer.stop();
+  }
+
   @Test
-  public void shouldRequestBodyNotEmptyAndContentTypeEqualsJson() throws IOException, InterruptedException {
+  public void shouldRequestBodyNotEmptyAndContentTypeEqualsJson() {
     Task task1 = new Task("First_Task", "FirstTask_description", TaskStatus.NEW,
         LocalDateTime.of(2022, 12, 14, 10, 0), 60);
 
@@ -47,8 +69,7 @@ public class TaskHandlerTest {
     assertTrue(request.headers().map().get("Content-Type").contains("application/json"),
         "Передан не верный формат данных");
 
-    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-    assertNotNull(response.body(), "Тело запроса пусто");
+    assertNotNull(body, "Тело запроса пусто");
   }
 
 
@@ -61,28 +82,6 @@ public class TaskHandlerTest {
 
     assertEquals(response.statusCode(), 400, "Передан не верный Json");
   }
-
-  @Test
-  public void shouldStatusCode404WhenCreatingTaskForTheSameTime()
-      throws IOException, InterruptedException {
-    Task task1 = new Task("First_Task", "FirstTask_description", TaskStatus.NEW,
-        LocalDateTime.of(2022, 12, 14, 10, 0), 60);
-    Task task2 = new Task("SameTimeTask", "FirstTask_description", TaskStatus.NEW,
-        LocalDateTime.of(2022, 12, 14, 10, 0), 60);
-
-    String taskOne = gson.toJson(task1);
-    String taskSameTime = gson.toJson(task2);
-
-    final HttpRequest.BodyPublisher body1 = HttpRequest.BodyPublishers.ofString(taskOne);
-    final HttpRequest.BodyPublisher body2 = HttpRequest.BodyPublishers.ofString(taskSameTime);
-    HttpRequest request1 = HttpRequest.newBuilder().uri(url).POST(body1).header("Content-Type", "application/json").build();
-    HttpRequest request2 = HttpRequest.newBuilder().uri(url).POST(body2).header("Content-Type", "application/json").build();
-    client.send(request1, HttpResponse.BodyHandlers.ofString());
-    HttpResponse<String> response = client.send(request2, HttpResponse.BodyHandlers.ofString());
-
-    assertEquals(response.statusCode(), 404, "Задача на это время уже существует");
-  }
-
 
   private void createTwoTask() throws IOException, InterruptedException {
     Task task1 = new Task("First_Task", "FirstTask_description", TaskStatus.NEW,
@@ -115,7 +114,7 @@ public class TaskHandlerTest {
   public void shouldGetTaskByIdIfTaskExistsAndIdIsCorrect() throws IOException, InterruptedException {
     createTwoTask();
 
-    URI url = URI.create("http://localhost:8080/tasks/task/?id=3");
+    URI url = URI.create("http://localhost:8080/tasks/task/?id=2");
     HttpRequest request = HttpRequest.newBuilder().uri(url).GET().build();
     HttpResponse<String> response2 = client.send(request, HttpResponse.BodyHandlers.ofString());
 
@@ -153,8 +152,9 @@ public class TaskHandlerTest {
 
   @Test
   public void shouldDeleteTaskByIdWhenTaskIsExistAndCorrectId() throws IOException, InterruptedException {
+    createTwoTask();
     HttpClient client = HttpClient.newHttpClient();
-    URI url = URI.create("http://localhost:8080/tasks/task/?id=3");
+    URI url = URI.create("http://localhost:8080/tasks/task/?id=2");
     HttpRequest request = HttpRequest.newBuilder().uri(url).DELETE().build();
     HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 

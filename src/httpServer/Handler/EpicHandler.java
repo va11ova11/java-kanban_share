@@ -1,26 +1,26 @@
-package HttpServer.Handler;
+package httpServer.Handler;
 
 import static jdk.internal.util.xml.XMLStreamWriter.DEFAULT_CHARSET;
 
-import HttpServer.Util.ResponseWriter;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
+import httpServer.Util.ResponseWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import models.business.Epic;
 import models.business.Subtask;
-import services.manager.FileBackedTasksManager;
+import services.manager.TasksManager;
 
 public class EpicHandler {
 
-  private final FileBackedTasksManager manager;
+  private final TasksManager manager;
   private final Gson gsonForGetEpic;
 
 
-  public EpicHandler(FileBackedTasksManager manager, Gson gsonForGetEpic) {
+  public EpicHandler(TasksManager manager, Gson gsonForGetEpic) {
     this.manager = manager;
     this.gsonForGetEpic = gsonForGetEpic;
   }
@@ -93,7 +93,7 @@ public class EpicHandler {
     }
   }
 
-  public void deleteAllSubtaskInEpic(HttpExchange exchange) throws IOException{
+  public void deleteAllSubtaskInEpic(HttpExchange exchange) throws IOException {
     Headers headers = exchange.getRequestHeaders();
     InputStream is = exchange.getRequestBody();
     if (is == null || !headers.get("Content-Type").contains("application/json")) {
